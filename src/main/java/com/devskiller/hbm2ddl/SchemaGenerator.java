@@ -14,13 +14,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.schema.Action;
 import org.hibernate.tool.schema.TargetType;
 
 class SchemaGenerator {
@@ -28,6 +28,9 @@ class SchemaGenerator {
 	void generate(File outputFile, List<String> packages, SchemaExport.Action action, Properties jpaProperties, boolean formatOutput, String delimiter) throws Exception {
 		Path schemaPath = outputFile.toPath();
 		Files.deleteIfExists(schemaPath);
+		if (jpaProperties.getProperty("hibernate.dialect") == null) {
+			jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+		}
 		MetadataSources metadata = new MetadataSources(
 				new StandardServiceRegistryBuilder()
 						.applySettings(jpaProperties)
@@ -40,32 +43,38 @@ class SchemaGenerator {
 		SchemaExport export = new SchemaExport();
 		export.setFormat(formatOutput);
 		export.setDelimiter(delimiter);
-		export.setOutputFile(schemaPath.getFileName().toString());
-		export.execute(EnumSet.of(TargetType.SCRIPT), SchemaExport.Action.BOTH, metadata.buildMetadata());
+		export.setOutputFile(schemaPath.toAbsolutePath().toString());
+		export.execute(EnumSet.of(TargetType.SCRIPT), action, metadata.buildMetadata());
 
 		// https://github.com/jOOQ/jOOQ/issues/6707
-		byte[] bytes = Files.readAllBytes(schemaPath);
-		Files.write(schemaPath, Arrays.copyOf(bytes, bytes.length - 1));
+		if (schemaPath.toFile().exists()) {
+			byte[] bytes = Files.readAllBytes(schemaPath);
+			if (bytes.length > 0 && bytes[bytes.length - 1] == '\n') {
+				Files.write(schemaPath, Arrays.copyOf(bytes, bytes.length - 1));
+			}
+		}
 	}
 
 	private static List<String> listClassNamesInPackage(String packageName) throws Exception {
 		List<String> classes = new ArrayList<>();
-		URL resource = Thread.currentThread().getContextClassLoader()
-				.getResource(packageName.replace('.', File.separatorChar));
-		if (resource == null) {
+		Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(packageName.replace('.', File.separatorChar));
+		if (!resources.hasMoreElements()) {
 			throw new IllegalStateException("No package found: " + packageName);
 		}
 		PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:*.class");
-		Files.walkFileTree(Paths.get(resource.getPath()), new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-				if (pathMatcher.matches(path.getFileName())) {
-					String className = Paths.get(resource.getPath()).relativize(path).toString().replace(File.separatorChar, '.');
-					classes.add(packageName + '.' + className.substring(0, className.length() - 6));
+		while (resources.hasMoreElements()) {
+			URL resource = resources.nextElement();
+			Files.walkFileTree(Paths.get(resource.getPath()), new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+					if (pathMatcher.matches(path.getFileName())) {
+						String className = Paths.get(resource.getPath()).relativize(path).toString().replace(File.separatorChar, '.');
+						classes.add(packageName + '.' + className.substring(0, className.length() - 6));
+					}
+					return FileVisitResult.CONTINUE;
 				}
-				return FileVisitResult.CONTINUE;
-			}
-		});
+			});
+		}
 		return classes;
 	}
 

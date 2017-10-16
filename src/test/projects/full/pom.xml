@@ -24,7 +24,7 @@
                             <value>org.hibernate.dialect.MySQL57Dialect</value>
                         </property>
                     </jpaProperties>
-                    <format>true</format>
+                    <formatOutput>true</formatOutput>
                     <delimiter>;</delimiter>
                     <action>BOTH</action>
                 </configuration>
