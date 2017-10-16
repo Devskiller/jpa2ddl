@@ -4,7 +4,7 @@
 
     <groupId>com.devskiller.hbm2ddl-maven-plugin</groupId>
     <artifactId>hbm2ddl-maven-plugin</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.1</version>
 
     <name>${project.artifactId}</name>
     <description>hbm2ddl Maven Plugin</description>
@@ -32,7 +32,7 @@
         <connection>scm:git:https://github.com/Devskiller/hbm2ddl-maven-plugin</connection>
         <developerConnection>scm:git:git@github.com:Devskiller/hbm2ddl-maven-plugin</developerConnection>
         <url>https://github.com/Devskiller/friendly-id</url>
-        <tag>HEAD</tag>
+        <tag>0.9.1</tag>
     </scm>
 
     <distributionManagement>
