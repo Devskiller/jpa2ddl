@@ -40,7 +40,7 @@ class SchemaGenerator {
 			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
 			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.drop-target", outputFile.getAbsolutePath());
 			jpaProperties.setProperty("hibernate.hbm2ddl.delimiter", delimiter);
-//			jpaProperties.setProperty("hibernate.hbm2ddl.auto", "create");
+			jpaProperties.setProperty("hibernate.format_sql", String.valueOf(formatOutput));
 		}
 
 		MetadataSources metadata = new MetadataSources(
