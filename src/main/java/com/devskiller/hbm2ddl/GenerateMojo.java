@@ -18,27 +18,56 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
+/**
+ * Goal to generate database schema based on the JPA entities
+ */
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class GenerateMojo extends AbstractMojo {
 
+	/**
+	 * Output file for the generated schema
+	 */
 	@Parameter(defaultValue = "${project.build.directory}/generated-resources/scripts/database.sql")
 	private File outputFile;
 
+	/**
+	 * List of packages containing JPA entities
+	 */
 	@Parameter(required = true)
 	private List<String> packages;
 
+	/**
+	 * Additional properties like dialect or naming strategies which should be used in generation task
+	 */
 	@Parameter
 	private Properties jpaProperties;
 
+	/**
+	 * Should we format the output
+	 */
 	@Parameter(defaultValue = "true")
 	private boolean formatOutput;
 
+	/**
+	 * Delimiter used to separate statements
+	 */
 	@Parameter(defaultValue = ";")
 	private String delimiter;
 
+	/**
+	 * Action describing which statements should be generated. Possible values:
+	 * CREATE
+	 * DROP
+	 * DROP_AND_CREATE
+	 */
 	@Parameter(defaultValue = "CREATE")
 	private Action action;
 
+	/**
+	 * Schema generation mode. Possible values:
+	 * DATABASE - Default - generation based on setting up embedded database and dumping the schema.
+	 * METADATA - generation based on static metadata
+	 */
 	@Parameter(defaultValue = "DATABASE")
 	private GenerationMode generationMode;
 

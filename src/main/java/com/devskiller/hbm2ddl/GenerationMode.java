@@ -1,5 +1,14 @@
 package com.devskiller.hbm2ddl;
 
 public enum GenerationMode {
-	METADATA, DATABASE
+
+	/**
+	 * Generation based on setting up embedded database and dumping the schema
+	 */
+	DATABASE,
+
+	/**
+	 * Generation based on static metadata
+	 */
+	METADATA
 }
