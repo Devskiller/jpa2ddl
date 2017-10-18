@@ -25,12 +25,24 @@ import org.hibernate.tool.schema.TargetType;
 
 class SchemaGenerator {
 
-	void generate(File outputFile, List<String> packages, SchemaExport.Action action, Properties jpaProperties, boolean formatOutput, String delimiter) throws Exception {
+	void generate(GenerationMode generationMode, File outputFile, List<String> packages, Action action, Properties jpaProperties, boolean formatOutput, String delimiter) throws Exception {
 		Path schemaPath = outputFile.toPath();
 		Files.deleteIfExists(schemaPath);
 		if (jpaProperties.getProperty("hibernate.dialect") == null) {
 			jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 		}
+
+		if (generationMode == GenerationMode.DATABASE) {
+			jpaProperties.setProperty("hibernate.connection.url", "jdbc:h2:mem:hbm2ddl");
+			jpaProperties.setProperty("hibernate.connection.username", "sa");
+			jpaProperties.setProperty("hibernate.connection.password", "");
+			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.action", action.toSchemaGenerationAction());
+			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
+			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.drop-target", outputFile.getAbsolutePath());
+			jpaProperties.setProperty("hibernate.hbm2ddl.delimiter", delimiter);
+//			jpaProperties.setProperty("hibernate.hbm2ddl.auto", "create");
+		}
+
 		MetadataSources metadata = new MetadataSources(
 				new StandardServiceRegistryBuilder()
 						.applySettings(jpaProperties)
@@ -40,11 +52,15 @@ class SchemaGenerator {
 			listClassNamesInPackage(packageName).forEach(metadata::addAnnotatedClassName);
 		}
 
-		SchemaExport export = new SchemaExport();
-		export.setFormat(formatOutput);
-		export.setDelimiter(delimiter);
-		export.setOutputFile(schemaPath.toAbsolutePath().toString());
-		export.execute(EnumSet.of(TargetType.SCRIPT), action, metadata.buildMetadata());
+		if (generationMode == GenerationMode.METADATA) {
+			SchemaExport export = new SchemaExport();
+			export.setFormat(formatOutput);
+			export.setDelimiter(delimiter);
+			export.setOutputFile(schemaPath.toAbsolutePath().toString());
+			export.execute(EnumSet.of(TargetType.SCRIPT), action.toSchemaExportAction(), metadata.buildMetadata());
+		} else {
+			metadata.buildMetadata().buildSessionFactory().close();
+		}
 
 		// https://github.com/jOOQ/jOOQ/issues/6707
 		if (schemaPath.toFile().exists()) {

@@ -17,7 +17,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 @Mojo(name = "generate", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class GenerateMojo extends AbstractMojo {
@@ -38,12 +37,15 @@ public class GenerateMojo extends AbstractMojo {
 	private String delimiter;
 
 	@Parameter(defaultValue = "CREATE")
-	private SchemaExport.Action action;
+	private Action action;
 
-	@Parameter( defaultValue = "${project}", readonly = true )
+	@Parameter(defaultValue = "DATABASE")
+	private GenerationMode generationMode;
+
+	@Parameter(defaultValue = "${project}", readonly = true)
 	private MavenProject project;
 
-	@Parameter( defaultValue = "${plugin}", readonly = true )
+	@Parameter(defaultValue = "${plugin}", readonly = true)
 	private PluginDescriptor descriptor;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -57,7 +59,7 @@ public class GenerateMojo extends AbstractMojo {
 			throw new IllegalStateException(e);
 		}
 		try {
-			schemaGenerator.generate(outputFile, packages, action, jpaProperties, formatOutput, delimiter);
+			schemaGenerator.generate(generationMode, outputFile, packages, action, jpaProperties, formatOutput, delimiter);
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
@@ -71,8 +73,7 @@ public class GenerateMojo extends AbstractMojo {
 		}
 	}
 
-	public List<String> getPackages() {
+	List<String> getPackages() {
 		return packages;
 	}
-
 }
