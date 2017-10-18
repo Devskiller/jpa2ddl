@@ -18,7 +18,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
         <plugin>
             <groupId>com.devskiller.hbm2ddl-maven-plugin</groupId>
             <artifactId>hbm2ddl-maven-plugin</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.2</version>
             <extensions>true</extensions> <!-- required to run automatically -->
             <configuration>
                 <packages>
@@ -53,7 +53,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
         <plugin>
             <groupId>com.devskiller.hbm2ddl-maven-plugin</groupId>
             <artifactId>hbm2ddl-maven-plugin</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.2</version>
             <configuration>
                 <outputFile>${basedir}/src/main/resources/database.sql</outputFile>
                 <packages>
@@ -78,5 +78,5 @@ You can run this plugin directly or integrate it into the default build lifecycl
 ### Direct invocation
 
 ```
-./mvnw com.devskiller.hbm2ddl-maven-plugin:hbm2ddl-maven-plugin:0.9.3:generate
+./mvnw com.devskiller.hbm2ddl-maven-plugin:hbm2ddl-maven-plugin:0.9.2:generate
 ```
