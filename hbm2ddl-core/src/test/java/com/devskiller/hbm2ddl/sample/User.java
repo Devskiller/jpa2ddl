@@ -11,4 +11,10 @@ class User {
 	private long id;
 
 	private Date date;
+
+	private String tatata;
+
+	private int aa;
+
+	private String dupaaaa;
 }

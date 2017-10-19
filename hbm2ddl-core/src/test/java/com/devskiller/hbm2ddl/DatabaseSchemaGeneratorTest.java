@@ -2,9 +2,9 @@ package com.devskiller.hbm2ddl;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Properties;
 
-import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -24,7 +24,7 @@ public class DatabaseSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(GenerationMode.DATABASE, outputFile,
-				Lists.newArrayList("com.devskiller.hbm2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";");
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";");
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
@@ -40,7 +40,7 @@ public class DatabaseSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(GenerationMode.DATABASE, outputFile,
-				Lists.newArrayList("com.devskiller.hbm2ddl.sample"), Action.DROP, new Properties(), true, ";");
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.DROP, new Properties(), true, ";");
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
@@ -56,10 +56,13 @@ public class DatabaseSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(GenerationMode.DATABASE, outputFile,
-				Lists.newArrayList("com.devskiller.hbm2ddl.sample"), Action.CREATE, new Properties(), true, ";");
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.CREATE, new Properties(), true, ";");
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
+		System.out.println("!!!!!!!!!!!!!");
+		System.out.println(sql);
+		System.out.println("!!!!!!!!!!!!!");
 		assertThat(sql).contains("create table User");
 		assertThat(sql).doesNotContain("drop table User");
 	}

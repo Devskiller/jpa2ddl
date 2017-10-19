@@ -10,12 +10,23 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.devskiller.hbm2ddl-maven-plugin</groupId>
+                <groupId>com.devskiller.hbm2ddl</groupId>
                 <artifactId>hbm2ddl-maven-plugin</artifactId>
                 <configuration>
+                    <outputFile>mydb.sql</outputFile>
                     <packages>
                         <package>com.test.model</package>
+                        <package>com.test.entities</package>
                     </packages>
+                    <jpaProperties>
+                        <property>
+                            <name>hibernate.dialect</name>
+                            <value>org.hibernate.dialect.MySQL57Dialect</value>
+                        </property>
+                    </jpaProperties>
+                    <formatOutput>true</formatOutput>
+                    <delimiter>;</delimiter>
+                    <action>DROP_AND_CREATE</action>
                 </configuration>
             </plugin>
         </plugins>

@@ -33,12 +33,18 @@ class SchemaGenerator {
 		}
 
 		if (generationMode == GenerationMode.DATABASE) {
-			jpaProperties.setProperty("hibernate.connection.url", "jdbc:h2:mem:hbm2ddl");
+			jpaProperties.setProperty("hibernate.connection.url", "jdbc:h2:file:/tmp/hbm2ddl");
 			jpaProperties.setProperty("hibernate.connection.username", "sa");
 			jpaProperties.setProperty("hibernate.connection.password", "");
 			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.action", action.toSchemaGenerationAction());
 			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
 			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.drop-target", outputFile.getAbsolutePath());
+
+// below updates the SCHEMA :)
+// we need to create a database, apply previous script and then run hibernate
+//			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
+//			jpaProperties.setProperty("javax.persistence.schema-generation.scripts.action", "update");
+
 			jpaProperties.setProperty("hibernate.hbm2ddl.delimiter", delimiter);
 			jpaProperties.setProperty("hibernate.format_sql", String.valueOf(formatOutput));
 		}
