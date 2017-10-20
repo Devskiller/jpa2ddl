@@ -91,7 +91,7 @@ public class GenerateMojo extends AbstractMojo {
 			schemaGenerator.generate(generationMode, outputFile, packages, action, jpaProperties, formatOutput, delimiter);
 			getLog().info("Schema saved to " + outputFile);
 		} catch (Exception e) {
-			throw new MojoExecutionException(e.getMessage());
+			throw new MojoExecutionException(e.getMessage(), e);
 		}
 	}
 
