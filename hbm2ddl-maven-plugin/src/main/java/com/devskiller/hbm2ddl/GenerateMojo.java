@@ -27,7 +27,7 @@ public class GenerateMojo extends AbstractMojo {
 	/**
 	 * Output file for the generated schema
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/generated-resources/scripts/database.sql")
+	@Parameter(defaultValue = "${project.build.directory}/generated-sources/scripts/database.sql")
 	private File outputFile;
 
 	/**
