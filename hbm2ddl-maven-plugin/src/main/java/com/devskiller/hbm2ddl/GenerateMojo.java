@@ -18,6 +18,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
+import static java.util.Objects.isNull;
+
 /**
  * Goal to generate database schema based on the JPA entities
  */
@@ -79,6 +81,9 @@ public class GenerateMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Running schema generation...");
+		if (isNull(jpaProperties)) {
+			jpaProperties = new Properties();
+		}
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 		List<String> compileSourceRoots = project.getCompileSourceRoots();
 		compileSourceRoots.stream().map(this::mapPathToURL).forEach(url -> descriptor.getClassRealm().addURL(url));
