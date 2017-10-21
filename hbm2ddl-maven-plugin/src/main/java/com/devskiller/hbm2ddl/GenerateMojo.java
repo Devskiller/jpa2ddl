@@ -30,7 +30,13 @@ public class GenerateMojo extends AbstractMojo {
 	 * Output file for the generated schema
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/generated-sources/scripts/database.sql")
-	private File outputFile;
+	private File schemaFile;
+
+	/**
+	 * Output directory for schema migrations
+	 */
+	@Parameter(defaultValue = "${project.build.directory}/generated-sources/scripts/migrations/")
+	private File migrationsDir;
 
 	/**
 	 * List of packages containing JPA entities
@@ -92,9 +98,11 @@ public class GenerateMojo extends AbstractMojo {
 		} catch (DependencyResolutionRequiredException e) {
 			throw new IllegalStateException(e);
 		}
+
+		GeneratorSettings settings = new GeneratorSettings(generationMode, schemaFile, migrationsDir, packages, action, jpaProperties, formatOutput, delimiter);
 		try {
-			schemaGenerator.generate(generationMode, outputFile, packages, action, jpaProperties, formatOutput, delimiter);
-			getLog().info("Schema saved to " + outputFile);
+			schemaGenerator.generate(settings);
+			getLog().info("Schema saved to " + schemaFile);
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage(), e);
 		}

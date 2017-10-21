@@ -33,7 +33,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
 ### Configuration parameters
 
 - `packages` (required): list of packages containing JPA entities
--  `outputFile`: output file for the generated schema. By default `${project.build.directory}/generated-resources/scripts/database.sql`
+-  `schemaFile`: output file for the generated schema. By default `${project.build.directory}/generated-resources/scripts/database.sql`
 - `jpaProperties`: additional properties like dialect or naming strategies which should be used in generation task. By default `empty`
 - `formatOutput`: should the output be formatted. By default `true`
 - `delimiter`: delimiter used to separate statements. By default `;` 
@@ -55,7 +55,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
             <artifactId>hbm2ddl-maven-plugin</artifactId>
             <version>0.9.2</version>
             <configuration>
-                <outputFile>${basedir}/src/main/resources/database.sql</outputFile>
+                <schemaFile>${basedir}/src/main/resources/database.sql</schemaFile>
                 <packages>
                     <package>com.test.model</package>
                     <package>com.test.entities</package>
@@ -64,6 +64,10 @@ You can run this plugin directly or integrate it into the default build lifecycl
                     <property>
                         <name>hibernate.dialect</name>
                         <value>org.hibernate.dialect.MySQL57Dialect</value>
+                    </property>
+                    <property>
+                        <name>hibernate.default_schema</name>
+                        <value>prod</value>
                     </property>
                 </jpaProperties>
                 <formatOutput>true</formatOutput>
