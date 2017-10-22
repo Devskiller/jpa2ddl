@@ -12,9 +12,6 @@ class User {
 
 	private Date date;
 
-	private String tatata;
+	private String email;
 
-	private int aa;
-
-	private String dupaaaa;
 }

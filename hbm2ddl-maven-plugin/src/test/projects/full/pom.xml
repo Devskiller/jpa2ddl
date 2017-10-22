@@ -13,7 +13,7 @@
                 <groupId>com.devskiller.hbm2ddl</groupId>
                 <artifactId>hbm2ddl-maven-plugin</artifactId>
                 <configuration>
-                    <outputFile>mydb.sql</outputFile>
+                    <outputPath>mydb.sql</outputPath>
                     <packages>
                         <package>com.test.model</package>
                         <package>com.test.entities</package>
