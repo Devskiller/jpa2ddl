@@ -9,12 +9,12 @@
                 <id>jpa2ddl</id>
                 <phases>
                     <process-classes>
-                        com.devskiller.jpa2ddl-maven-plugin:jpa2ddl-maven-plugin:${project.version}:generate
+                        com.devskiller.jpa2ddl:jpa2ddl-maven-plugin:${project.version}:generate
                     </process-classes>
                 </phases>
                 <default-phases>
                     <process-classes>
-                        com.devskiller.jpa2ddl-maven-plugin:jpa2ddl-maven-plugin:${project.version}:generate
+                        com.devskiller.jpa2ddl:jpa2ddl-maven-plugin:${project.version}:generate
                     </process-classes>
                 </default-phases>
             </configuration>
