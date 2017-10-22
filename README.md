@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin.svg?branch=master)](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin)   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl/jpa2ddl-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl-maven-plugin/jpa2ddl-maven-plugin)
+[![Build Status](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin.svg?branch=master)](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin)   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl/jpa2ddl-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl/jpa2ddl-maven-plugin)
 
 # Hibernate Schema Generator Plugin
 
@@ -18,7 +18,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
         <plugin>
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <extensions>true</extensions> <!-- required to run automatically -->
             <configuration>
                 <packages>
@@ -56,7 +56,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
         <plugin>
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <configuration>
                 <outputPath>${basedir}/src/main/resources/database.sql</outputPath>
                 <packages>
@@ -102,7 +102,7 @@ Sample configuration:
         <plugin>
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <configuration>
                 <outputPath>${basedir}/src/main/resources/migrations/</outputPath>
                 <packages>
@@ -127,5 +127,5 @@ Sample configuration:
 ### Direct invocation
 
 ```
-./mvnw com.devskiller.jpa2ddl:jpa2ddl-maven-plugin:0.9.2:generate
+./mvnw com.devskiller.jpa2ddl:jpa2ddl-maven-plugin:0.9.3:generate
 ```
