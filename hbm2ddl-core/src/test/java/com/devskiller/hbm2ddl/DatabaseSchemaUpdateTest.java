@@ -21,20 +21,23 @@ public class DatabaseSchemaUpdateTest {
 	@Test
 	public void shouldGenerateSchemaUpdate() throws Exception {
 		// given
-		SchemaGenerator schemaGenerator = new SchemaGenerator();
-		File schemaFile = Paths.get("src/test/resources/sample/flat_database.sql").toFile();
-		File migrationsDir = tempFolder.newFolder();
+		File outputPath = tempFolder.newFolder();
+
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_migration/v1__init.sql").getPath()),
+				outputPath.toPath().resolve("v1__init.sql"));
 
 		Properties jpaProperties = new Properties();
 		jpaProperties.setProperty("hibernate.dialect", MySQL57Dialect.class.getCanonicalName());
 		jpaProperties.setProperty("hibernate.default_schema", "prod");
 
+		SchemaGenerator schemaGenerator = new SchemaGenerator();
+
 		// when
-		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, schemaFile,
-				migrationsDir, Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.UPDATE, jpaProperties, true, ";"));
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.UPDATE, jpaProperties, true, ";"));
 
 		// then
-		String sql = new String(Files.readAllBytes(migrationsDir.toPath().resolve("v1.sql")));
+		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v2__jpa2ddl.sql")));
 		assertThat(sql).containsIgnoringCase("alter table prod.User");
 		assertThat(sql).containsIgnoringCase("add column email");
 		assertThat(sql).doesNotContain("create table prod.User");

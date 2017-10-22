@@ -24,7 +24,7 @@ public class MetadataSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.METADATA, outputFile,
-				null, Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";"));
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";"));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
@@ -40,7 +40,7 @@ public class MetadataSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.METADATA, outputFile,
-				null, Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.DROP, new Properties(), true, ";"));
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.DROP, new Properties(), true, ";"));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
@@ -56,7 +56,7 @@ public class MetadataSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.METADATA, outputFile,
-				null, Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.CREATE, new Properties(), true, ";"));
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.CREATE, new Properties(), true, ";"));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));

@@ -7,19 +7,17 @@ import java.util.Properties;
 class GeneratorSettings {
 
 	private final GenerationMode generationMode;
-	private final File schemaFile;
-	private final File migrationsDir;
+	private final File outputPath;
 	private final List<String> packages;
 	private final Action action;
 	private final Properties jpaProperties;
 	private final boolean formatOutput;
 	private final String delimiter;
 
-	GeneratorSettings(GenerationMode generationMode, File schemaFile, File migrationsDir, List<String> packages, Action action,
+	GeneratorSettings(GenerationMode generationMode, File outputPath, List<String> packages, Action action,
 	                  Properties jpaProperties, boolean formatOutput, String delimiter) {
 		this.generationMode = generationMode;
-		this.schemaFile = schemaFile;
-		this.migrationsDir = migrationsDir;
+		this.outputPath = outputPath;
 		this.packages = packages;
 		this.action = action;
 		this.jpaProperties = jpaProperties;
@@ -31,12 +29,8 @@ class GeneratorSettings {
 		return generationMode;
 	}
 
-	File getSchemaFile() {
-		return schemaFile;
-	}
-
-	public File getMigrationsDir() {
-		return migrationsDir;
+	File getOutputPath() {
+		return outputPath;
 	}
 
 	List<String> getPackages() {

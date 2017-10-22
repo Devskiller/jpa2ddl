@@ -99,7 +99,7 @@ public class GenerateMojo extends AbstractMojo {
 			throw new IllegalStateException(e);
 		}
 
-		GeneratorSettings settings = new GeneratorSettings(generationMode, schemaFile, migrationsDir, packages, action, jpaProperties, formatOutput, delimiter);
+		GeneratorSettings settings = new GeneratorSettings(generationMode, schemaFile, packages, action, jpaProperties, formatOutput, delimiter);
 		try {
 			schemaGenerator.generate(settings);
 			getLog().info("Schema saved to " + schemaFile);
