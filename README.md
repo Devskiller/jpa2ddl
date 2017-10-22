@@ -4,7 +4,7 @@
 
 ## Motivation
 
-Why another tool to dump JPA schema? All tools that we've found were related to legacy versions of Hibernate or were covering just a simple cases, without option to configure dialect or naming strategy. Also all tools we found are based on the `SchemaExport` class, which does not always correlate with the runtime schema - for example due to the lack of support for the `Integrator` services, used to register `UserType` classes like JodaTime or similar. We were also looking for a tool that will be able to handle further schema migrations, but just dump the current version. 
+Why another tool to dump JPA schema? All tools that we've found were related to legacy versions of Hibernate or were covering just a simple cases, without option to configure dialect or naming strategy. Also all tools we found are based on the `SchemaExport` class, which does not always correlate with the runtime schema - for example due to the lack of support for the `Integrator` services, used to register `UserType` classes like JodaTime or similar. We were also looking for a tool that will be able to handle further schema migrations, not just dump the current version. 
 
 ## Usage
 
