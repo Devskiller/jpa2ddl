@@ -39,7 +39,7 @@ class SchemaGenerator {
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.drop-target", outputFile.getAbsolutePath());
 
-			settings.getJpaProperties().setProperty("hibernate.jpa2ddl.delimiter", settings.getDelimiter());
+			settings.getJpaProperties().setProperty("hibernate.hbm2ddl.delimiter", settings.getDelimiter());
 			settings.getJpaProperties().setProperty("hibernate.format_sql", String.valueOf(settings.isFormatOutput()));
 		}
 
@@ -81,11 +81,15 @@ class SchemaGenerator {
 		}
 
 		if (outputFile.exists()) {
-			List<String> lines = Files.readAllLines(outputFile.toPath())
-					.stream()
-					.map(line -> line.replaceAll("JPA2DDL\\.(PUBLIC\\.)?", ""))
-					.collect(Collectors.toList());
-			Files.write(outputFile.toPath(), lines);
+			if (outputFile.length() == 0) {
+				Files.delete(outputFile.toPath());
+			} else {
+				List<String> lines = Files.readAllLines(outputFile.toPath())
+						.stream()
+						.map(line -> line.replaceAll("JPA2DDL\\.(PUBLIC\\.)?", ""))
+						.collect(Collectors.toList());
+				Files.write(outputFile.toPath(), lines);
+			}
 		}
 	}
 

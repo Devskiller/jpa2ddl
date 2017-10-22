@@ -39,7 +39,7 @@ public class DatabaseSchemaUpdateTest {
 		// then
 		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v2__jpa2ddl.sql")));
 		assertThat(sql).containsIgnoringCase("alter table prod.User");
-		assertThat(sql).containsIgnoringCase("add column email");
+		assertThat(sql).containsIgnoringCase("add column email varchar(255);");
 		assertThat(sql).doesNotContain("create table prod.User");
 	}
 
@@ -66,5 +66,29 @@ public class DatabaseSchemaUpdateTest {
 		assertThat(sql).containsIgnoringCase("add column email");
 		assertThat(sql).doesNotContain("create table User");
 	}
+
+
+	@Test
+	public void shouldSkipGenerationIfNoChanges() throws Exception {
+		// given
+		File outputPath = tempFolder.newFolder();
+
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_empty_migration/v1__init.sql").getPath()),
+				outputPath.toPath().resolve("v1__init.sql"));
+
+		Properties jpaProperties = new Properties();
+		jpaProperties.setProperty("hibernate.dialect", MySQL57Dialect.class.getCanonicalName());
+
+		SchemaGenerator schemaGenerator = new SchemaGenerator();
+
+		// when
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";"));
+
+		// then
+		File migrationFile = outputPath.toPath().resolve("v2__jpa2ddl.sql").toFile();
+		assertThat(migrationFile).doesNotExist();
+	}
+
 
 }
