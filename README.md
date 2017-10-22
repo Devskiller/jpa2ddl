@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Devskiller/hbm2ddl-maven-plugin.svg?branch=master)](https://travis-ci.org/Devskiller/hbm2ddl-maven-plugin)   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.devskiller.hbm2ddl-maven-plugin/hbm2ddl-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.devskiller.hbm2ddl-maven-plugin/hbm2ddl-maven-plugin)
+[![Build Status](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin.svg?branch=master)](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin)   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl-maven-plugin/jpa2ddl-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl-maven-plugin/jpa2ddl-maven-plugin)
 
 # Hibernate Schema Generator Plugin
 
@@ -16,8 +16,8 @@ You can run this plugin directly or integrate it into the default build lifecycl
 <build>
     <plugins>
         <plugin>
-            <groupId>com.devskiller.hbm2ddl-maven-plugin</groupId>
-            <artifactId>hbm2ddl-maven-plugin</artifactId>
+            <groupId>com.devskiller.jpa2ddl-maven-plugin</groupId>
+            <artifactId>jpa2ddl-maven-plugin</artifactId>
             <version>0.9.2</version>
             <extensions>true</extensions> <!-- required to run automatically -->
             <configuration>
@@ -54,8 +54,8 @@ You can run this plugin directly or integrate it into the default build lifecycl
 <build>
     <plugins>
         <plugin>
-            <groupId>com.devskiller.hbm2ddl-maven-plugin</groupId>
-            <artifactId>hbm2ddl-maven-plugin</artifactId>
+            <groupId>com.devskiller.jpa2ddl-maven-plugin</groupId>
+            <artifactId>jpa2ddl-maven-plugin</artifactId>
             <version>0.9.2</version>
             <configuration>
                 <outputPath>${basedir}/src/main/resources/database.sql</outputPath>
@@ -100,8 +100,8 @@ Sample configuration:
 <build>
     <plugins>
         <plugin>
-            <groupId>com.devskiller.hbm2ddl-maven-plugin</groupId>
-            <artifactId>hbm2ddl-maven-plugin</artifactId>
+            <groupId>com.devskiller.jpa2ddl-maven-plugin</groupId>
+            <artifactId>jpa2ddl-maven-plugin</artifactId>
             <version>0.9.2</version>
             <configuration>
                 <outputPath>${basedir}/src/main/resources/migrations/</outputPath>
@@ -127,5 +127,5 @@ Sample configuration:
 ### Direct invocation
 
 ```
-./mvnw com.devskiller.hbm2ddl-maven-plugin:hbm2ddl-maven-plugin:0.9.2:generate
+./mvnw com.devskiller.jpa2ddl-maven-plugin:jpa2ddl-maven-plugin:0.9.2:generate
 ```

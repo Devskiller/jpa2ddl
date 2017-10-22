@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-set>
+    <components>
+        <component>
+            <role>org.apache.maven.lifecycle.Lifecycle</role>
+            <implementation>org.apache.maven.lifecycle.Lifecycle</implementation>
+            <role-hint>jpa2ddl</role-hint>
+            <configuration>
+                <id>jpa2ddl</id>
+                <phases>
+                    <process-classes>
+                        com.devskiller.jpa2ddl-maven-plugin:jpa2ddl-maven-plugin:${project.version}:generate
+                    </process-classes>
+                </phases>
+                <default-phases>
+                    <process-classes>
+                        com.devskiller.jpa2ddl-maven-plugin:jpa2ddl-maven-plugin:${project.version}:generate
+                    </process-classes>
+                </default-phases>
+            </configuration>
+        </component>
+    </components>
+</component-set>

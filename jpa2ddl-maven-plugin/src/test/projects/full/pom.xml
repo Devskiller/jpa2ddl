@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.devskiller.jpa2ddl</groupId>
+    <artifactId>sample-project</artifactId>
+    <version>0.1</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.devskiller.jpa2ddl</groupId>
+                <artifactId>jpa2ddl-maven-plugin</artifactId>
+                <configuration>
+                    <outputPath>mydb.sql</outputPath>
+                    <packages>
+                        <package>com.test.model</package>
+                        <package>com.test.entities</package>
+                    </packages>
+                    <jpaProperties>
+                        <property>
+                            <name>hibernate.dialect</name>
+                            <value>org.hibernate.dialect.MySQL57Dialect</value>
+                        </property>
+                    </jpaProperties>
+                    <formatOutput>true</formatOutput>
+                    <delimiter>;</delimiter>
+                    <action>DROP_AND_CREATE</action>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
