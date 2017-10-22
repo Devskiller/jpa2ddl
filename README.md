@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin.svg?branch=master)](https://travis-ci.org/Devskiller/jpa2ddl-maven-plugin)   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl/jpa2ddl-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl/jpa2ddl-maven-plugin)
+[![Build Status](https://travis-ci.org/Devskiller/jpa2ddl.svg?branch=master)](https://travis-ci.org/Devskiller/jpa2ddl)   [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl/jpa2ddl-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.devskiller.jpa2ddl/jpa2ddl-maven-plugin)
 
-# Hibernate Schema Generator Plugin
+# JPA Schema Generator Plugin
 
 ## Motivation
 
