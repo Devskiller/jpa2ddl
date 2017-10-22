@@ -43,4 +43,28 @@ public class DatabaseSchemaUpdateTest {
 		assertThat(sql).doesNotContain("create table prod.User");
 	}
 
+	@Test
+	public void shouldGenerateDefaultSchemaUpdate() throws Exception {
+		// given
+		File outputPath = tempFolder.newFolder();
+
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_default_migration/v1__init.sql").getPath()),
+				outputPath.toPath().resolve("v1__init.sql"));
+
+		Properties jpaProperties = new Properties();
+		jpaProperties.setProperty("hibernate.dialect", MySQL57Dialect.class.getCanonicalName());
+
+		SchemaGenerator schemaGenerator = new SchemaGenerator();
+
+		// when
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
+				Arrays.asList("com.devskiller.hbm2ddl.sample"), Action.UPDATE, jpaProperties, true, ";"));
+
+		// then
+		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v2__jpa2ddl.sql")));
+		assertThat(sql).containsIgnoringCase("alter table User");
+		assertThat(sql).containsIgnoringCase("add column email");
+		assertThat(sql).doesNotContain("create table User");
+	}
+
 }

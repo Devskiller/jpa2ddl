@@ -19,6 +19,8 @@ class SchemaGenerator {
 	private static final String DB_URL = "jdbc:h2:mem:hbm2ddl";
 
 	void generate(GeneratorSettings settings) throws Exception {
+		validateSettings(settings);
+
 		if (settings.getJpaProperties().getProperty("hibernate.dialect") == null) {
 			settings.getJpaProperties().setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 		}
@@ -81,9 +83,20 @@ class SchemaGenerator {
 		if (outputFile.exists()) {
 			List<String> lines = Files.readAllLines(outputFile.toPath())
 					.stream()
-					.map(line -> line.replaceAll("HBM2DDL\\.", ""))
+					.map(line -> line.replaceAll("HBM2DDL\\.(PUBLIC\\.)?", ""))
 					.collect(Collectors.toList());
 			Files.write(outputFile.toPath(), lines);
+		}
+	}
+
+	private void validateSettings(GeneratorSettings settings) {
+		if (settings.getAction() == Action.UPDATE) {
+			if (settings.getOutputPath().exists() && !settings.getOutputPath().isDirectory()) {
+				throw new IllegalArgumentException("For UPDATE action outputPath must be a directory");
+			}
+			if (settings.getGenerationMode() != GenerationMode.DATABASE) {
+				throw new IllegalArgumentException("For UPDATE action generation mode must be set to DATABASE");
+			}
 		}
 	}
 

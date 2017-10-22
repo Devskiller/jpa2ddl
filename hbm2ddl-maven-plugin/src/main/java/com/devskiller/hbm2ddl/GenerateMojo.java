@@ -27,16 +27,10 @@ import static java.util.Objects.isNull;
 public class GenerateMojo extends AbstractMojo {
 
 	/**
-	 * Output file for the generated schema
+	 * Output path for the generated schema.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/generated-sources/scripts/database.sql")
-	private File schemaFile;
-
-	/**
-	 * Output directory for schema migrations
-	 */
-	@Parameter(defaultValue = "${project.build.directory}/generated-sources/scripts/migrations/")
-	private File migrationsDir;
+	@Parameter
+	private File outputPath;
 
 	/**
 	 * List of packages containing JPA entities
@@ -67,6 +61,7 @@ public class GenerateMojo extends AbstractMojo {
 	 * CREATE
 	 * DROP
 	 * DROP_AND_CREATE
+	 * UPDATE
 	 */
 	@Parameter(defaultValue = "CREATE")
 	private Action action;
@@ -90,6 +85,15 @@ public class GenerateMojo extends AbstractMojo {
 		if (isNull(jpaProperties)) {
 			jpaProperties = new Properties();
 		}
+
+		if (outputPath == null) {
+			if (action == Action.UPDATE) {
+				outputPath = Paths.get("${project.build.directory}/generated-resources/scripts").toFile();
+			} else {
+				outputPath = Paths.get("${project.build.directory}/generated-resources/scripts/database.sql").toFile();
+			}
+		}
+
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 		List<String> compileSourceRoots = project.getCompileSourceRoots();
 		compileSourceRoots.stream().map(this::mapPathToURL).forEach(url -> descriptor.getClassRealm().addURL(url));
@@ -99,10 +103,10 @@ public class GenerateMojo extends AbstractMojo {
 			throw new IllegalStateException(e);
 		}
 
-		GeneratorSettings settings = new GeneratorSettings(generationMode, schemaFile, packages, action, jpaProperties, formatOutput, delimiter);
+		GeneratorSettings settings = new GeneratorSettings(generationMode, outputPath, packages, action, jpaProperties, formatOutput, delimiter);
 		try {
 			schemaGenerator.generate(settings);
-			getLog().info("Schema saved to " + schemaFile);
+			getLog().info("Schema saved to " + outputPath);
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage(), e);
 		}
