@@ -20,7 +20,7 @@ class GeneratePluginTest {
 	void shouldAddTaskToProject() {
 		File buildFile = testProjectDir.newFile("build.gradle")
 
-		Files.write(buildFile.toPath(), "jpa2ddl {packages=['true']}".getBytes())
+		Files.write(buildFile.toPath(), "jpa2ddl {packages=['com.test']\njpaProperties=['hibernate.dialect':'org.hibernate.dialect.H2Dialect']}".getBytes())
 
 		Project project = ProjectBuilder.builder()
 				.withProjectDir(testProjectDir.getRoot())
@@ -30,9 +30,14 @@ class GeneratePluginTest {
 
 		((ProjectInternal) project).evaluate()
 
-		GenerateTask task = project.tasks.generateDdl
+		GenerateTask task = (GenerateTask) project.tasks.generateDdl
 
 		GeneratorSettings settings = task.getSettings()
 		assertThat(settings.getAction()).isEqualTo(Action.CREATE)
+		assertThat(settings.getDelimiter()).isEqualTo(";")
+		assertThat(settings.getGenerationMode()).isEqualTo(GenerationMode.DATABASE)
+		assertThat(settings.getJpaProperties()).contains(new MapEntry("hibernate.dialect", "org.hibernate.dialect.H2Dialect"))
+		assertThat(settings.getPackages()).containsOnly("com.test")
+		assertThat(settings.getOutputPath()).isEqualTo(testProjectDir.getRoot().toPath().resolve("build/generated-resources/main/scripts/database.sql").toFile())
 	}
 }
