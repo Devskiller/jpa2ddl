@@ -4,7 +4,7 @@
 
 ## Motivation
 
-Why another tool to dump JPA schema? All tools that we've found were related to legacy versions of Hibernate or were covering just a simple cases, without option to configure dialect or naming strategy. Also all tools we found are based on the `SchemaExport` class, which does not always correlate with the runtime schema - for example due to the lack of support for the `Integrator` services, used to register `UserType` classes like JodaTime or similar. We were also looking for a tool that will be able to handle further schema migrations, not just dump the current version. 
+Why another tool to dump the JPA schema? All tools that we've found were related to legacy versions of Hibernate or were covering just simple cases, without options to configure dialect or naming strategy. Also all of the tools we've found are based on the `SchemaExport` class, which does not always correlate with the runtime schema - for example due to the lack of support for the `Integrator` services, used to register `UserType` classes like JodaTime or similar. We were also looking for a tool that is be able to handle further schema migrations, not just dump the current version. 
 
 ## Usage
 
@@ -38,7 +38,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
   - for other actions: `${project.build.directory}/generated-resources/scripts/database.sql`
 - `jpaProperties`: additional properties like dialect or naming strategies which should be used in generation task. By default `empty`
 - `formatOutput`: should the output be formatted. By default `true`
-- `delimiter`: delimiter used to separate statements. By default `;` 
+- `delimiter`: delimiter used to separate statements. By default `;`
 - `action`: which statements should be generated. By default: `CREATE`. Possible values:
   - `DROP`
   - `CREATE`
