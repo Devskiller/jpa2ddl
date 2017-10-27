@@ -38,6 +38,7 @@
     <modules>
         <module>jpa2ddl-core</module>
         <module>jpa2ddl-maven-plugin</module>
+        <module>jpa2ddl-gradle-plugin</module>
     </modules>
 
     <distributionManagement>
