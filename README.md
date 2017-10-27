@@ -6,7 +6,25 @@
 
 Why another tool to dump the JPA schema? All tools that we've found were related to legacy versions of Hibernate or were covering just simple cases, without options to configure dialect or naming strategy. Also all of the tools we've found are based on the `SchemaExport` class, which does not always correlate with the runtime schema - for example due to the lack of support for the `Integrator` services, used to register `UserType` classes like JodaTime or similar. We were also looking for a tool that is be able to handle further schema migrations, not just dump the current version. 
 
-## Usage
+## Configuration parameters
+
+- `packages` (required): list of packages containing JPA entities
+-  `outputPath`: output file for the generated schema. By default:
+  - for `UPDATE` action: `BUILD_OUTPUT_DIR/generated-resources/scripts/`
+  - for other actions: `BUILD_OUTPUT_DIR/generated-resources/scripts/database.sql`
+- `jpaProperties`: additional properties like dialect or naming strategies which should be used in generation task. By default `empty`
+- `formatOutput`: should the output be formatted. By default `true`
+- `delimiter`: delimiter used to separate statements. By default `;`
+- `action`: which statements should be generated. By default: `CREATE`. Possible values:
+  - `DROP`
+  - `CREATE`
+  - `DROP_AND_CREATE`
+  - `UPDATE`
+- `generationMode`: schema generation mode. By default `DATABASE`. Possible values:
+  - `DATABASE`: generation based on setting up embedded database and dumping the schema
+  - `METADATA`: generation based on static metadata
+
+## Maven Plugin
 
 You can run this plugin directly or integrate it into the default build lifecycle.
 
@@ -29,24 +47,6 @@ You can run this plugin directly or integrate it into the default build lifecycl
     </plugins>
 </build>
 ```
-
-### Configuration parameters
-
-- `packages` (required): list of packages containing JPA entities
--  `outputPath`: output file for the generated schema. By default:
-  - for `UPDATE` action: `${project.build.directory}/generated-resources/scripts/`
-  - for other actions: `${project.build.directory}/generated-resources/scripts/database.sql`
-- `jpaProperties`: additional properties like dialect or naming strategies which should be used in generation task. By default `empty`
-- `formatOutput`: should the output be formatted. By default `true`
-- `delimiter`: delimiter used to separate statements. By default `;`
-- `action`: which statements should be generated. By default: `CREATE`. Possible values:
-  - `DROP`
-  - `CREATE`
-  - `DROP_AND_CREATE`
-  - `UPDATE`
-- `generationMode`: schema generation mode. By default `DATABASE`. Possible values:
-  - `DATABASE`: generation based on setting up embedded database and dumping the schema
-  - `METADATA`: generation based on static metadata
 
 ### Generate schema
 
@@ -128,4 +128,25 @@ Sample configuration:
 
 ```
 ./mvnw com.devskiller.jpa2ddl:jpa2ddl-maven-plugin:0.9.4:generate
+```
+
+## Gradle Plugin
+
+Below you can find a sample `build.gradle` script configuration:
+
+```groovy
+buildscript {
+    repositories {
+	    mavenCentral()
+    }
+    dependencies {
+	    classpath "com.devskiller.jpa2ddl:jpa2ddl-gradle-plugin:0.9.4"
+    }
+}
+
+apply plugin: 'com.devskiller.jpa2ddl'
+
+jpa2ddl {
+    packages = ['com.test.model']
+}
 ```
