@@ -51,6 +51,12 @@ public class GenerateMojo extends AbstractMojo {
 	private boolean formatOutput;
 
 	/**
+	 * Should we skip sequence generation
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean skipSequences;
+
+	/**
 	 * Delimiter used to separate statements
 	 */
 	@Parameter(defaultValue = ";")
@@ -103,7 +109,8 @@ public class GenerateMojo extends AbstractMojo {
 			throw new IllegalStateException(e);
 		}
 
-		GeneratorSettings settings = new GeneratorSettings(generationMode, outputPath, packages, action, jpaProperties, formatOutput, delimiter);
+		GeneratorSettings settings = new GeneratorSettings(
+				generationMode, outputPath, packages, action, jpaProperties, formatOutput, delimiter, skipSequences);
 		try {
 			schemaGenerator.generate(settings);
 			getLog().info("Schema saved to " + outputPath);

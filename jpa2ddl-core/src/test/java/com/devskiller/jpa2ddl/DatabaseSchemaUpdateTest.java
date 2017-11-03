@@ -34,12 +34,14 @@ public class DatabaseSchemaUpdateTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";"));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";", false));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v2__jpa2ddl.sql")));
 		assertThat(sql).containsIgnoringCase("alter table prod.User");
 		assertThat(sql).containsIgnoringCase("add column email varchar(255);");
+		assertThat(sql).containsIgnoringCase("create table prod.hibernate_sequence");
+		assertThat(sql).containsIgnoringCase("insert into prod.hibernate_sequence values");
 		assertThat(sql).doesNotContain("create table prod.User");
 	}
 
@@ -58,13 +60,15 @@ public class DatabaseSchemaUpdateTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";"));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";", true));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v2__jpa2ddl.sql")));
 		assertThat(sql).containsIgnoringCase("alter table User");
 		assertThat(sql).containsIgnoringCase("add column email");
 		assertThat(sql).doesNotContain("create table User");
+		assertThat(sql).doesNotContain("create table hibernate_sequence");
+		assertThat(sql).doesNotContain("insert into hibernate_sequence values");
 	}
 
 
@@ -83,7 +87,7 @@ public class DatabaseSchemaUpdateTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";"));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";", true));
 
 		// then
 		File migrationFile = outputPath.toPath().resolve("v2__jpa2ddl.sql").toFile();

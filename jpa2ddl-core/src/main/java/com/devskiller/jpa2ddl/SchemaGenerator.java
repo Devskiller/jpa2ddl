@@ -18,11 +18,18 @@ class SchemaGenerator {
 
 	private static final String DB_URL = "jdbc:h2:mem:jpa2ddl";
 
+	private static final String HIBERNATE_DIALECT = "hibernate.dialect";
+	private static final String HIBERNATE_SCHEMA_FILTER_PROVIDER = "hibernate.hbm2ddl.schema_filter_provider";
+
 	void generate(GeneratorSettings settings) throws Exception {
 		validateSettings(settings);
 
-		if (settings.getJpaProperties().getProperty("hibernate.dialect") == null) {
-			settings.getJpaProperties().setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+		if (settings.getJpaProperties().getProperty(HIBERNATE_DIALECT) == null) {
+			settings.getJpaProperties().setProperty(HIBERNATE_DIALECT, "org.hibernate.dialect.H2Dialect");
+		}
+
+		if (settings.isSkipSequences() && settings.getJpaProperties().getProperty(HIBERNATE_SCHEMA_FILTER_PROVIDER) == null) {
+			settings.getJpaProperties().setProperty(HIBERNATE_SCHEMA_FILTER_PROVIDER, NoSequenceFilterProvider.class.getCanonicalName());
 		}
 
 		File outputFile = settings.getOutputPath();

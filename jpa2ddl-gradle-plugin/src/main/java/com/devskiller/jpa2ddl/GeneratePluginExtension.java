@@ -15,6 +15,7 @@ public class GeneratePluginExtension {
 	private final PropertyState<Action> action;
 	private final PropertyState<Properties> jpaProperties;
 	private final PropertyState<Boolean> formatOutput;
+	private final PropertyState<Boolean> skipSequences;
 	private final PropertyState<String> delimiter;
 
 	public GeneratePluginExtension(Project project) {
@@ -24,6 +25,7 @@ public class GeneratePluginExtension {
 		action = project.property(Action.class);
 		jpaProperties = project.property(Properties.class);
 		formatOutput = project.property(Boolean.class);
+		skipSequences = project.property(Boolean.class);
 		delimiter = project.property(String.class);
 	}
 
@@ -75,6 +77,14 @@ public class GeneratePluginExtension {
 		this.formatOutput.set(formatOutput);
 	}
 
+	public Boolean getSkipSequences() {
+		return skipSequences.get();
+	}
+
+	public void setSkipSequences(Boolean skipSequences) {
+		this.skipSequences.set(skipSequences);
+	}
+
 	public String getDelimiter() {
 		return delimiter.get();
 	}
@@ -105,6 +115,10 @@ public class GeneratePluginExtension {
 
 	public Provider<Boolean> getFormatOutputProvider() {
 		return formatOutput;
+	}
+
+	public Provider<Boolean> getSkipSequencesProvider() {
+		return skipSequences;
 	}
 
 	public Provider<String> getDelimiterProvider() {

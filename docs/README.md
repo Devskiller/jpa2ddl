@@ -14,6 +14,7 @@ Why another tool to dump the JPA schema? All tools that we've found were related
   - for other actions: `BUILD_OUTPUT_DIR/generated-resources/scripts/database.sql`
 - `jpaProperties`: additional properties like dialect or naming strategies which should be used in generation task. By default `empty`
 - `formatOutput`: should the output be formatted. By default `true`
+- `skipSequences`: should the generator skip sequences creation. By default `false`
 - `delimiter`: delimiter used to separate statements. By default `;`
 - `action`: which statements should be generated. By default: `CREATE`. Possible values:
   - `DROP`
@@ -74,6 +75,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
                     </property>
                 </jpaProperties>
                 <formatOutput>true</formatOutput>
+                <skipSequences>true</skipSequences>
                 <delimiter>;</delimiter>
                 <action>DROP_AND_CREATE</action>
             </configuration>

@@ -46,8 +46,8 @@ public class GenerateTask extends DefaultTask {
 				extension.getAction(),
 				extension.getJpaProperties(),
 				extension.getFormatOutput(),
-				extension.getDelimiter()
-		);
+				extension.getDelimiter(),
+				extension.getSkipSequences());
 	}
 
 	public void setOutputClassesDirs(Set<String> outputClassesDirs) {

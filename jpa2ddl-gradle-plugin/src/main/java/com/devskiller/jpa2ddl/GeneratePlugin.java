@@ -66,6 +66,9 @@ class GeneratePlugin implements Plugin<Project> {
 		if (!generatePluginExtension.getFormatOutputProvider().isPresent()) {
 			generatePluginExtension.setFormatOutput(true);
 		}
+		if (!generatePluginExtension.getSkipSequencesProvider().isPresent()) {
+			generatePluginExtension.setSkipSequences(false);
+		}
 		if (!generatePluginExtension.getJpaPropertiesProvider().isPresent()) {
 			generatePluginExtension.setJpaProperties(new Properties());
 		}
