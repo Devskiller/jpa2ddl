@@ -94,9 +94,9 @@ public class GenerateMojo extends AbstractMojo {
 
 		if (outputPath == null) {
 			if (action == Action.UPDATE) {
-				outputPath = Paths.get("${project.build.directory}/generated-resources/scripts").toFile();
+				outputPath = Paths.get(project.getBuild().getDirectory()).resolve("generated-resources/scripts").toFile();
 			} else {
-				outputPath = Paths.get("${project.build.directory}/generated-resources/scripts/database.sql").toFile();
+				outputPath = Paths.get(project.getBuild().getDirectory()).resolve("generated-resources/scripts/database.sql").toFile();
 			}
 		}
 
