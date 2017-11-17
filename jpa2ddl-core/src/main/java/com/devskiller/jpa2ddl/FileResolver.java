@@ -2,6 +2,7 @@ package com.devskiller.jpa2ddl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -73,12 +74,16 @@ class FileResolver {
 		PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:*.class");
 		while (resources.hasMoreElements()) {
 			URL resource = resources.nextElement();
-			Files.walkFileTree(Paths.get(resource.getPath()), new SimpleFileVisitor<Path>() {
+			Files.walkFileTree(Paths.get(resource.toURI()), new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
 					if (pathMatcher.matches(path.getFileName())) {
-						String className = Paths.get(resource.getPath()).relativize(path).toString().replace(File.separatorChar, '.');
-						classes.add(packageName + '.' + className.substring(0, className.length() - 6));
+						try {
+							String className = Paths.get(resource.toURI()).relativize(path).toString().replace(File.separatorChar, '.');
+							classes.add(packageName + '.' + className.substring(0, className.length() - 6));
+						} catch (URISyntaxException e) {
+							throw new IllegalStateException(e);
+						}
 					}
 					return FileVisitResult.CONTINUE;
 				}
