@@ -7,10 +7,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.Oracle8iDialect;
+import org.hibernate.dialect.PostgreSQL81Dialect;
+import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
 
@@ -34,7 +39,12 @@ class SchemaGenerator {
 
 		File outputFile = settings.getOutputPath();
 		if (settings.getGenerationMode() == GenerationMode.DATABASE) {
-			settings.getJpaProperties().setProperty("hibernate.connection.url", DB_URL);
+
+			String dbUrl = DB_URL + discoverDatabaseMode(settings.getJpaProperties().getProperty(HIBERNATE_DIALECT))
+					.map(mode -> ";MODE=" + mode)
+					.orElse("");
+
+			settings.getJpaProperties().setProperty("hibernate.connection.url", dbUrl);
 			settings.getJpaProperties().setProperty("hibernate.connection.username", "sa");
 			settings.getJpaProperties().setProperty("hibernate.connection.password", "");
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.action", settings.getAction().toSchemaGenerationAction());
@@ -93,7 +103,7 @@ class SchemaGenerator {
 			} else {
 				List<String> lines = Files.readAllLines(outputFile.toPath())
 						.stream()
-						.map(line -> line.replaceAll("JPA2DDL\\.(PUBLIC\\.)?", ""))
+						.map(line -> line.replaceAll("(?i)JPA2DDL\\.(PUBLIC\\.)?", ""))
 						.collect(Collectors.toList());
 				Files.write(outputFile.toPath(), lines);
 			}
@@ -109,6 +119,20 @@ class SchemaGenerator {
 				throw new IllegalArgumentException("For UPDATE action generation mode must be set to DATABASE");
 			}
 		}
+	}
+
+	private Optional<String> discoverDatabaseMode(String dialect) throws ClassNotFoundException {
+		Class<?> dialectClass = Class.forName(dialect);
+		if (MySQLDialect.class.isAssignableFrom(dialectClass)) {
+			return Optional.of("MYSQL");
+		} else if (PostgreSQL81Dialect.class.isAssignableFrom(dialectClass)) {
+			return Optional.of("PostgreSQL");
+		} else if (Oracle8iDialect.class.isAssignableFrom(dialectClass)) {
+			return Optional.of("Oracle");
+		} else if (SQLServerDialect.class.isAssignableFrom(dialectClass)) {
+			return Optional.of("MSSQLServer");
+		}
+		return Optional.empty();
 	}
 
 }
