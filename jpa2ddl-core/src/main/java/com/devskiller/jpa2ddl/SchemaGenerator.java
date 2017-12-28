@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.h2.util.Utils;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.dialect.MySQLDialect;
@@ -21,8 +22,8 @@ import org.hibernate.tool.schema.TargetType;
 
 class SchemaGenerator {
 
+	public static final String POSTGRESQL_MODE = "PostgreSQL";
 	private static final String DB_URL = "jdbc:h2:mem:jpa2ddl";
-
 	private static final String HIBERNATE_DIALECT = "hibernate.dialect";
 	private static final String HIBERNATE_SCHEMA_FILTER_PROVIDER = "hibernate.hbm2ddl.schema_filter_provider";
 
@@ -38,11 +39,21 @@ class SchemaGenerator {
 		}
 
 		File outputFile = settings.getOutputPath();
+
+		Optional<String> dbMode = discoverDatabaseMode(settings.getJpaProperties().getProperty(HIBERNATE_DIALECT));
+
 		if (settings.getGenerationMode() == GenerationMode.DATABASE) {
 
-			String dbUrl = DB_URL + discoverDatabaseMode(settings.getJpaProperties().getProperty(HIBERNATE_DIALECT))
-					.map(mode -> ";MODE=" + mode)
-					.orElse("");
+
+			String dbUrl = DB_URL +
+					dbMode
+							.map(mode -> ";MODE=" + mode)
+							.orElse("") +
+					dbMode
+							.filter(mode -> mode.equals(POSTGRESQL_MODE))
+							.map(mode -> ";INIT=set search_path to pg_catalog,public;")
+							.orElse("");
+
 
 			settings.getJpaProperties().setProperty("hibernate.connection.url", dbUrl);
 			settings.getJpaProperties().setProperty("hibernate.connection.username", "sa");
@@ -82,9 +93,15 @@ class SchemaGenerator {
 		} else {
 			Connection connection = null;
 			if (settings.getAction() == Action.UPDATE) {
+				connection = DriverManager.getConnection(DB_URL, "SA", "");
+
+				if (dbMode.filter(mode -> mode.equals(POSTGRESQL_MODE)).isPresent()) {
+					String dbInit = new String(Utils.getResource("/org/h2/server/pg/pg_catalog.sql"));
+					connection.prepareStatement(dbInit).execute();
+				}
+
 				List<Path> resolvedMigrations = FileResolver.resolveExistingMigrations(settings.getOutputPath(), false);
 				for (Path resolvedMigration : resolvedMigrations) {
-					connection = DriverManager.getConnection(DB_URL, "SA", "");
 					String statement = new String(Files.readAllBytes(resolvedMigration));
 					connection.prepareStatement(statement).execute();
 				}
@@ -126,7 +143,7 @@ class SchemaGenerator {
 		if (MySQLDialect.class.isAssignableFrom(dialectClass)) {
 			return Optional.of("MYSQL");
 		} else if (PostgreSQL81Dialect.class.isAssignableFrom(dialectClass)) {
-			return Optional.of("PostgreSQL");
+			return Optional.of(POSTGRESQL_MODE);
 		} else if (Oracle8iDialect.class.isAssignableFrom(dialectClass)) {
 			return Optional.of("Oracle");
 		} else if (SQLServerDialect.class.isAssignableFrom(dialectClass)) {

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.hibernate.dialect.MySQL57Dialect;
+import org.hibernate.dialect.PostgreSQL9Dialect;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -92,6 +93,25 @@ public class DatabaseSchemaUpdateTest {
 		// then
 		File migrationFile = outputPath.toPath().resolve("v2__jpa2ddl.sql").toFile();
 		assertThat(migrationFile).doesNotExist();
+	}
+
+	@Test
+	public void shouldGenerateSchemaFromDatabaseWithUpdateWithPostgresDialect() throws Exception {
+		// given
+		File outputPath = tempFolder.newFolder();
+		Properties jpaProperties = new Properties();
+		jpaProperties.setProperty("hibernate.dialect", PostgreSQL9Dialect.class.getCanonicalName());
+
+		SchemaGenerator schemaGenerator = new SchemaGenerator();
+
+		// when
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";", false));
+
+		// then
+		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v1__jpa2ddl.sql")));
+		assertThat(sql).contains("create table User");
+		assertThat(sql).doesNotContain("drop table User");
 	}
 
 
