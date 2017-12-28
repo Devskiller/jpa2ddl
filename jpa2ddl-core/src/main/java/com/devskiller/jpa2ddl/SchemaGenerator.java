@@ -83,7 +83,7 @@ class SchemaGenerator {
 
 				engineDecorator.decorateDatabaseInitialization(connection);
 
-				List<Path> resolvedMigrations = FileResolver.resolveExistingMigrations(settings.getOutputPath(), false);
+				List<Path> resolvedMigrations = FileResolver.resolveExistingMigrations(settings.getOutputPath(), false, true);
 				for (Path resolvedMigration : resolvedMigrations) {
 					String statement = new String(Files.readAllBytes(resolvedMigration));
 					connection.prepareStatement(statement).execute();

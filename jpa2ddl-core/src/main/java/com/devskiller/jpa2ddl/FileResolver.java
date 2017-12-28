@@ -26,9 +26,10 @@ import java.util.stream.Collectors;
 class FileResolver {
 
 	private final static Pattern FILENAME_PATTERN = Pattern.compile("v([0-9]+)__.+\\.sql");
+	private final static Pattern SCHEMA_FILENAME_PATTERN = Pattern.compile("v([0-9]+)__jpa2ddl.*\\.sql");
 
 	static File resolveNextMigrationFile(File migrationDir) {
-		Optional<Path> lastFile = resolveExistingMigrations(migrationDir, true)
+		Optional<Path> lastFile = resolveExistingMigrations(migrationDir, true, false)
 				.stream()
 				.findFirst();
 
@@ -44,7 +45,7 @@ class FileResolver {
 		return migrationDir.toPath().resolve("v" + ++fileIndex + "__jpa2ddl.sql").toFile();
 	}
 
-	static List<Path> resolveExistingMigrations(File migrationsDir, boolean reversed) {
+	static List<Path> resolveExistingMigrations(File migrationsDir, boolean reversed, boolean onlySchemaMigrations) {
 		if (!migrationsDir.exists()) {
 			migrationsDir.mkdirs();
 		}
@@ -61,6 +62,7 @@ class FileResolver {
 		}
 		return Arrays.stream(files)
 				.map(File::toPath)
+				.filter(path -> !onlySchemaMigrations || SCHEMA_FILENAME_PATTERN.matcher(path.getFileName().toString()).matches())
 				.sorted(pathComparator)
 				.collect(Collectors.toList());
 	}

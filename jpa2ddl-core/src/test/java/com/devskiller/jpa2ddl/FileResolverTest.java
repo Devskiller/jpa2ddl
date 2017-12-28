@@ -1,6 +1,5 @@
 package com.devskiller.jpa2ddl;
 
-import javax.swing.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
@@ -21,18 +20,20 @@ public class FileResolverTest {
 		// given
 		File migrationsDir = tempFolder.newFolder();
 
-		Path first = migrationsDir.toPath().resolve("v1__jpa2ddl.sql");
+		Path first = migrationsDir.toPath().resolve("v1__jpa2ddl_init.sql");
 		first.toFile().createNewFile();
 		Path second = migrationsDir.toPath().resolve("v2__my_description.sql");
 		second.toFile().createNewFile();
+		Path third = migrationsDir.toPath().resolve("v3__jpa2ddl.sql");
+		third.toFile().createNewFile();
 
 		// when
-		List<Path> file = FileResolver.resolveExistingMigrations(migrationsDir, false);
+		List<Path> file = FileResolver.resolveExistingMigrations(migrationsDir, false, true);
 
 		// then
 		assertThat(file).containsSequence(
 				first,
-				second
+				third
 		);
 	}
 

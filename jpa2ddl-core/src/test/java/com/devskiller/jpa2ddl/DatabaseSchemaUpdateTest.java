@@ -24,8 +24,8 @@ public class DatabaseSchemaUpdateTest {
 		// given
 		File outputPath = tempFolder.newFolder();
 
-		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_migration/v1__init.sql").getPath()),
-				outputPath.toPath().resolve("v1__init.sql"));
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_migration/v1__jpa2ddl_init.sql").getPath()),
+				outputPath.toPath().resolve("v1__jpa2ddl_init.sql"));
 
 		Properties jpaProperties = new Properties();
 		jpaProperties.setProperty("hibernate.dialect", MySQL57Dialect.class.getCanonicalName());
@@ -51,8 +51,8 @@ public class DatabaseSchemaUpdateTest {
 		// given
 		File outputPath = tempFolder.newFolder();
 
-		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_default_migration/v1__init.sql").getPath()),
-				outputPath.toPath().resolve("v1__init.sql"));
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_default_migration/v1__jpa2ddl_init.sql").getPath()),
+				outputPath.toPath().resolve("v1__jpa2ddl_init.sql"));
 
 		Properties jpaProperties = new Properties();
 		jpaProperties.setProperty("hibernate.dialect", MySQL57Dialect.class.getCanonicalName());
@@ -78,8 +78,8 @@ public class DatabaseSchemaUpdateTest {
 		// given
 		File outputPath = tempFolder.newFolder();
 
-		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_empty_migration/v1__init.sql").getPath()),
-				outputPath.toPath().resolve("v1__init.sql"));
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_empty_migration/v1__jpa2ddl_init.sql").getPath()),
+				outputPath.toPath().resolve("v1__jpa2ddl_init.sql"));
 
 		Properties jpaProperties = new Properties();
 		jpaProperties.setProperty("hibernate.dialect", MySQL57Dialect.class.getCanonicalName());
