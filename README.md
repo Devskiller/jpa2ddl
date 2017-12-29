@@ -96,7 +96,7 @@ src/main/resources/migrations/
  ... next
 ```
 
-Please note that after generation you can change the name of the file to make it more descriptive following the filename pattern `v(N)_jpa2ddl(_custom_description).sql` - for example `v1_jpa2ddl_init.sql`
+Please note that after generation you can change the name of the file to make it more descriptive following the filename pattern `v(N)__jpa2ddl(_custom_description).sql` - for example `v1__jpa2ddl_init.sql`
 
 Sample configuration:
 
