@@ -1,5 +1,6 @@
 package com.devskiller.jpa2ddl;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -12,7 +13,7 @@ import org.gradle.api.tasks.TaskAction;
 public class GenerateTask extends DefaultTask {
 
 	private GeneratePluginExtension extension;
-	private Set<String> outputClassesDirs;
+	private Set<File> outputClassesDirs;
 
 	void setExtension(GeneratePluginExtension extension) {
 		this.extension = extension;
@@ -25,7 +26,7 @@ public class GenerateTask extends DefaultTask {
 		URL[] urls = outputClassesDirs.stream()
 				.map(path -> {
 					try {
-						return new URL("file://" + path + "/");
+						return path.toURI().toURL();
 					} catch (MalformedURLException e) {
 						throw new IllegalStateException("Cannot build URL from sourceSets", e);
 					}
@@ -50,7 +51,7 @@ public class GenerateTask extends DefaultTask {
 				extension.getSkipSequences());
 	}
 
-	public void setOutputClassesDirs(Set<String> outputClassesDirs) {
+	public void setOutputClassesDirs(Set<File> outputClassesDirs) {
 		this.outputClassesDirs = outputClassesDirs;
 	}
 }

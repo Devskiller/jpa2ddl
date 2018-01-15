@@ -1,5 +1,6 @@
 package com.devskiller.jpa2ddl;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -34,14 +35,14 @@ class GeneratePlugin implements Plugin<Project> {
 		project.afterEvaluate(evaluatedProject -> {
 			fillDefaults(evaluatedProject, generatePluginExtension);
 			SourceSetContainer sourceSets = (SourceSetContainer) project.getProperties().get("sourceSets");
-			Set<String> paths;
+			Set<File> paths;
 			if (sourceSets != null) {
 				UnionFileCollection mainClasspath = (UnionFileCollection) sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath();
 				paths = mainClasspath.getSources()
 						.stream()
 						.filter(fileCollection -> fileCollection instanceof DefaultSourceSetOutput)
 						.map(DefaultSourceSetOutput.class::cast)
-						.map(fileCollection -> fileCollection.getClassesDirs().getAsPath())
+						.flatMap(fileCollection -> fileCollection.getClassesDirs().getFiles().stream())
 						.collect(Collectors.toSet());
 			} else {
 				paths = new HashSet<>();
