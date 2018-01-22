@@ -24,7 +24,7 @@ public class DatabaseSchemaUpdateTest {
 		// given
 		File outputPath = tempFolder.newFolder();
 
-		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_migration/v1__jpa2ddl_init.sql").getPath()),
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_migration/v1__jpa2ddl_init.sql").toURI()),
 				outputPath.toPath().resolve("v1__jpa2ddl_init.sql"));
 
 		Properties jpaProperties = new Properties();
@@ -51,7 +51,7 @@ public class DatabaseSchemaUpdateTest {
 		// given
 		File outputPath = tempFolder.newFolder();
 
-		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_default_migration/v1__jpa2ddl_init.sql").getPath()),
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_default_migration/v1__jpa2ddl_init.sql").toURI()),
 				outputPath.toPath().resolve("v1__jpa2ddl_init.sql"));
 
 		Properties jpaProperties = new Properties();
@@ -78,7 +78,7 @@ public class DatabaseSchemaUpdateTest {
 		// given
 		File outputPath = tempFolder.newFolder();
 
-		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_empty_migration/v1__jpa2ddl_init.sql").getPath()),
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_empty_migration/v1__jpa2ddl_init.sql").toURI()),
 				outputPath.toPath().resolve("v1__jpa2ddl_init.sql"));
 
 		Properties jpaProperties = new Properties();

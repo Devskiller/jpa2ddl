@@ -21,9 +21,15 @@ class SchemaGenerator {
 	private static final String DB_URL = "jdbc:h2:mem:jpa2ddl";
 	private static final String HIBERNATE_DIALECT = "hibernate.dialect";
 	private static final String HIBERNATE_SCHEMA_FILTER_PROVIDER = "hibernate.hbm2ddl.schema_filter_provider";
+	// v0.9.10-gp
+	private static final String JPA_VALIDATION_MODE = "javax.persistence.validation.mode";
 
 	void generate(GeneratorSettings settings) throws Exception {
 		validateSettings(settings);
+		
+		// v0.9.10-gp
+		// disable validation
+		settings.getJpaProperties().setProperty(JPA_VALIDATION_MODE, "NONE");
 
 		if (settings.getJpaProperties().getProperty(HIBERNATE_DIALECT) == null) {
 			settings.getJpaProperties().setProperty(HIBERNATE_DIALECT, "org.hibernate.dialect.H2Dialect");

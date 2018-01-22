@@ -4,7 +4,7 @@
 
     <groupId>com.devskiller.jpa2ddl</groupId>
     <artifactId>jpa2ddl-parent</artifactId>
-    <version>0.9.10-SNAPSHOT</version>
+    <version>0.9.10-gp</version>
 
     <name>${project.artifactId}</name>
     <description>jpa2ddl parent</description>

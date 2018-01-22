@@ -4,12 +4,10 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.internal.file.UnionFileCollection;
-import org.gradle.api.internal.tasks.DefaultSourceSetOutput;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.SourceSet;
@@ -38,15 +36,22 @@ class GeneratePlugin implements Plugin<Project> {
 			Set<File> paths;
 			if (sourceSets != null) {
 				UnionFileCollection mainClasspath = (UnionFileCollection) sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath();
+				// v0.9.10-gp
+				paths = mainClasspath.getFiles();
+				/**
 				paths = mainClasspath.getSources()
 						.stream()
 						.filter(fileCollection -> fileCollection instanceof DefaultSourceSetOutput)
 						.map(DefaultSourceSetOutput.class::cast)
 						.flatMap(fileCollection -> fileCollection.getClassesDirs().getFiles().stream())
 						.collect(Collectors.toSet());
+				**/
 			} else {
 				paths = new HashSet<>();
 			}
+			
+			// paths.forEach((p) -> System.err.println("==== Path on CP: " + p.toString()));
+			
 			generateTask.setOutputClassesDirs(paths);
 		});
 	}
