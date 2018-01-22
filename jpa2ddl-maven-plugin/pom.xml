@@ -73,6 +73,13 @@
     </dependencies>
 
     <build>
+    	<!-- This is to prevent errors showing in eclipse because the mojos.xml file is not on in the build path -->
+    	<resources>
+    		<resource>
+    			<directory>"${project.basedir}/target/classes/META-INF/takari"</directory>
+    			<filtering>true</filtering>
+    		</resource>
+    	</resources>
         <plugins>
             <plugin>
                 <groupId>io.takari.maven.plugins</groupId>
