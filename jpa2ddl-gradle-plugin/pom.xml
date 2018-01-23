@@ -15,6 +15,10 @@
 
     <packaging>pom</packaging>
 
+    <properties>
+        <script.prefix>./</script.prefix>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.devskiller.jpa2ddl</groupId>
@@ -49,7 +53,7 @@
                         <id>gradle</id>
                         <phase>package</phase>
                         <configuration>
-                            <executable>./gradlew</executable>
+                            <executable>${script.prefix}gradlew</executable>
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>build</argument>
@@ -101,5 +105,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <script.prefix></script.prefix>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
