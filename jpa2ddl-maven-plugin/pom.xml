@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.devskiller.jpa2ddl</groupId>
         <artifactId>jpa2ddl-parent</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>0.9.10-gp</version>
     </parent>
 
     <artifactId>jpa2ddl-maven-plugin</artifactId>
@@ -73,6 +73,13 @@
     </dependencies>
 
     <build>
+    	<!-- This is to prevent errors showing in eclipse because the mojos.xml file is not on in the build path -->
+    	<resources>
+    		<resource>
+    			<directory>"${project.basedir}/target/classes/META-INF/takari"</directory>
+    			<filtering>true</filtering>
+    		</resource>
+    	</resources>
         <plugins>
             <plugin>
                 <groupId>io.takari.maven.plugins</groupId>
