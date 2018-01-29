@@ -178,7 +178,7 @@
                             <file>README.md</file>
                             <replacements>
                                 <replacement>
-                                    <token>(\d\.\d\.\d(\-SNAPSHOT)?)</token>
+                                    <token>(\d+\.\d+\.\d+(\-SNAPSHOT)?)</token>
                                     <value>${project.version}</value>
                                 </replacement>
                             </replacements>

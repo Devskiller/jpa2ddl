@@ -37,7 +37,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
         <plugin>
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.11</version>
             <extensions>true</extensions> <!-- required to run automatically -->
             <configuration>
                 <packages>
@@ -57,7 +57,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
         <plugin>
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.11</version>
             <configuration>
                 <outputPath>${basedir}/src/main/resources/database.sql</outputPath>
                 <packages>
@@ -106,7 +106,7 @@ Sample configuration:
         <plugin>
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
-            <version>0.9.9</version>
+            <version>0.9.11</version>
             <configuration>
                 <outputPath>${basedir}/src/main/resources/migrations/</outputPath>
                 <packages>
@@ -131,7 +131,7 @@ Sample configuration:
 ### Direct invocation
 
 ```
-./mvnw com.devskiller.jpa2ddl:jpa2ddl-maven-plugin:0.9.9:generate
+./mvnw com.devskiller.jpa2ddl:jpa2ddl-maven-plugin:0.9.11:generate
 ```
 
 ## Gradle Plugin
@@ -144,7 +144,7 @@ buildscript {
 	    mavenCentral()
     }
     dependencies {
-	    classpath "com.devskiller.jpa2ddl:jpa2ddl-gradle-plugin:0.9.9"
+	    classpath "com.devskiller.jpa2ddl:jpa2ddl-gradle-plugin:0.9.11"
     }
 }
 
