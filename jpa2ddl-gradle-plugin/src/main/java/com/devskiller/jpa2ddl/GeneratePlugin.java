@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -37,9 +36,7 @@ class GeneratePlugin implements Plugin<Project> {
 			Set<File> paths;
 			if (sourceSets != null) {
 				UnionFileCollection mainClasspath = (UnionFileCollection) sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath();
-				paths = mainClasspath.getFiles().stream()
-						.filter(File::isDirectory)
-						.collect(Collectors.toSet());
+				paths = mainClasspath.getFiles();
 			} else {
 				paths = new HashSet<>();
 			}
