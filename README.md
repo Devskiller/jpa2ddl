@@ -58,6 +58,7 @@ You can run this plugin directly or integrate it into the default build lifecycl
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
             <version>0.9.11</version>
+            <extensions>true</extensions> <!-- required to run automatically -->
             <configuration>
                 <outputPath>${basedir}/src/main/resources/database.sql</outputPath>
                 <packages>
@@ -107,6 +108,7 @@ Sample configuration:
             <groupId>com.devskiller.jpa2ddl</groupId>
             <artifactId>jpa2ddl-maven-plugin</artifactId>
             <version>0.9.11</version>
+            <extensions>true</extensions> <!-- required to run automatically -->
             <configuration>
                 <outputPath>${basedir}/src/main/resources/migrations/</outputPath>
                 <packages>
