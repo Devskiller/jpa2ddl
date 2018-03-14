@@ -54,7 +54,7 @@
                 <version>${project.version}</version>
                 <executions>
                     <execution>
-                        <id>process</id>
+                        <id>generate</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
