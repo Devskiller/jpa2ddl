@@ -9,3 +9,6 @@ cache:
   directories:
   - ~/.m2/repository
   - ~/.m2/wrapper
+  
+before_cache:
+  - rm -Rf ~/.m2/repository/com/devskiller/jpa2ddl/
