@@ -51,7 +51,7 @@
             <plugin>
                 <groupId>com.devskiller.jpa2ddl</groupId>
                 <artifactId>jpa2ddl-maven-plugin</artifactId>
-                <version>0.9.12-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <packages>
