@@ -15,6 +15,12 @@
 
     <packaging>pom</packaging>
 
+    <properties>
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+        <skipStaging>true</skipStaging>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
     <modules>
         <module>jpa2ddl-flyway-maven-sample</module>
     </modules>
