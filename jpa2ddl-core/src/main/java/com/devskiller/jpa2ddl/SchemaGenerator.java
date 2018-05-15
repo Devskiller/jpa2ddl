@@ -64,7 +64,7 @@ class SchemaGenerator {
 
 		for (String packageName : settings.getPackages()) {
 			FileResolver.listClassNamesInPackage(packageName).forEach(metadata::addAnnotatedClassName);
-                        metadata.addPackage(packageName);
+                	metadata.addPackage(packageName);
 		}
 
 		if (settings.getAction() != Action.UPDATE) {
