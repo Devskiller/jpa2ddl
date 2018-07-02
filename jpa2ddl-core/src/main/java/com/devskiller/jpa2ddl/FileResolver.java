@@ -23,24 +23,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+
 class FileResolver {
 
-	private final static Pattern FILENAME_PATTERN = Pattern.compile("v([0-9]+)__.+\\.sql");
-	private final static Pattern SCHEMA_FILENAME_PATTERN = Pattern.compile("v([0-9]+)__jpa2ddl.*\\.sql");
+	private final static Pattern FILENAME_PATTERN = Pattern.compile("v([0-9]+)__.+\\.sql", CASE_INSENSITIVE);
+	private final static Pattern SCHEMA_FILENAME_PATTERN = Pattern.compile("v([0-9]+)__jpa2ddl.*\\.sql", CASE_INSENSITIVE);
 
 	static File resolveNextMigrationFile(File migrationDir) {
 		Optional<Path> lastFile = resolveExistingMigrations(migrationDir, true, false)
 				.stream()
 				.findFirst();
-
-		Integer fileIndex = lastFile.map((Path input) -> FILENAME_PATTERN.matcher(input.getFileName().toString()))
+		
+		Long fileIndex = lastFile.map((Path input) -> FILENAME_PATTERN.matcher(input.getFileName().toString()))
 				.map(matcher -> {
 					if (matcher.find()) {
-						return Integer.valueOf(matcher.group(1));
+						return Long.valueOf(matcher.group(1));
 					} else {
-						return 0;
+						return 0L;
 					}
-				}).orElse(0);
+				}).orElse(0L);
 
 		return migrationDir.toPath().resolve("v" + ++fileIndex + "__jpa2ddl.sql").toFile();
 	}
@@ -56,7 +58,7 @@ class FileResolver {
 			return Collections.emptyList();
 		}
 
-		Comparator<Path> pathComparator = Comparator.comparingInt(FileResolver::compareVersionedMigrations);
+		Comparator<Path> pathComparator = Comparator.comparingLong(FileResolver::compareVersionedMigrations);
 		if (reversed) {
 			pathComparator = pathComparator.reversed();
 		}
@@ -94,12 +96,12 @@ class FileResolver {
 		return classes;
 	}
 
-	private static Integer compareVersionedMigrations(Path path) {
+	private static Long compareVersionedMigrations(Path path) {
 		Matcher filenameMatcher = FILENAME_PATTERN.matcher(path.getFileName().toString());
 		if (filenameMatcher.find()) {
-			return Integer.valueOf(filenameMatcher.group(1));
+			return Long.valueOf(filenameMatcher.group(1));
 		} else {
-			return Integer.MIN_VALUE;
+			return Long.MIN_VALUE;
 		}
 	}
 }
