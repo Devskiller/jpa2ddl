@@ -62,9 +62,9 @@ class SchemaGenerator {
 						.applySettings(settings.getJpaProperties())
 						.build());
 
-		for (String packageName : settings.getPackages()) {
-			FileResolver.listClassNamesInPackage(packageName).forEach(metadata::addAnnotatedClassName);
-                	metadata.addPackage(packageName);
+		for (String packageName: settings.getPackages().stream().sorted().collect(Collectors.toList())) {
+			FileResolver.listClassNamesInPackage(packageName).stream().sorted().forEach(metadata::addAnnotatedClassName);
+			metadata.addPackage(packageName);
 		}
 
 		if (settings.getAction() != Action.UPDATE) {
