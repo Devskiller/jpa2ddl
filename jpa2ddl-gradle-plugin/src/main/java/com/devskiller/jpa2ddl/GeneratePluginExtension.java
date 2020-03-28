@@ -1,36 +1,40 @@
 package com.devskiller.jpa2ddl;
 
-import java.io.File;
-import java.util.Properties;
-
 import org.gradle.api.Project;
-import org.gradle.api.provider.PropertyState;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 public class GeneratePluginExtension {
 
-	private final PropertyState<File> outputPath;
-	private final PropertyState<GenerationMode> generationMode;
-	private final PropertyState<String[]> packages;
-	private final PropertyState<Action> action;
-	private final PropertyState<Properties> jpaProperties;
-	private final PropertyState<Boolean> formatOutput;
-	private final PropertyState<Boolean> skipSequences;
-	private final PropertyState<String> delimiter;
+	private final RegularFileProperty outputPath;
+	private final Property<GenerationMode> generationMode;
+	private final ListProperty<String> packages;
+	private final Property<Action> action;
+	private final MapProperty<String, String> jpaProperties;
+	private final Property<Boolean> formatOutput;
+	private final Property<Boolean> skipSequences;
+	private final Property<String> delimiter;
 
 	public GeneratePluginExtension(Project project) {
-		outputPath = project.property(File.class);
-		generationMode = project.property(GenerationMode.class);
-		packages = project.property(String[].class);
-		action = project.property(Action.class);
-		jpaProperties = project.property(Properties.class);
-		formatOutput = project.property(Boolean.class);
-		skipSequences = project.property(Boolean.class);
-		delimiter = project.property(String.class);
+		outputPath = project.getObjects().fileProperty();
+		generationMode = project.getObjects().property(GenerationMode.class);
+		packages = project.getObjects().listProperty(String.class);
+		action = project.getObjects().property(Action.class);
+		jpaProperties = project.getObjects().mapProperty(String.class, String.class);
+		formatOutput = project.getObjects().property(Boolean.class);
+		skipSequences = project.getObjects().property(Boolean.class);
+		delimiter = project.getObjects().property(String.class);
 	}
 
 	public File getOutputPath() {
-		return outputPath.get();
+		return outputPath.getAsFile().get();
 	}
 
 	public void setOutputPath(File outputPath) {
@@ -45,11 +49,11 @@ public class GeneratePluginExtension {
 		this.generationMode.set(generationMode);
 	}
 
-	public String[] getPackages() {
+	public List<String> getPackages() {
 		return packages.get();
 	}
 
-	public void setPackages(String[] packages) {
+	public void setPackages(List<String> packages) {
 		this.packages.set(packages);
 	}
 
@@ -61,11 +65,11 @@ public class GeneratePluginExtension {
 		this.action.set(action);
 	}
 
-	public Properties getJpaProperties() {
+	public Map<String, String> getJpaProperties() {
 		return jpaProperties.get();
 	}
 
-	public void setJpaProperties(Properties jpaProperties) {
+	public void setJpaProperties(Map<String, String> jpaProperties) {
 		this.jpaProperties.set(jpaProperties);
 	}
 
@@ -94,14 +98,14 @@ public class GeneratePluginExtension {
 	}
 
 	public Provider<File> getOutputPathProvider() {
-		return outputPath;
+		return outputPath.getAsFile();
 	}
 
 	public Provider<GenerationMode> getGenerationModeProvider() {
 		return generationMode;
 	}
 
-	public Provider<String[]> getPackagesProvider() {
+	public Provider<List<String>> getPackagesProvider() {
 		return packages;
 	}
 
@@ -109,7 +113,7 @@ public class GeneratePluginExtension {
 		return action;
 	}
 
-	public Provider<Properties> getJpaPropertiesProvider() {
+	public Provider<Map<String, String>> getJpaPropertiesProvider() {
 		return jpaProperties;
 	}
 

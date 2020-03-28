@@ -1,8 +1,8 @@
 package com.devskiller.jpa2ddl;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import org.gradle.api.Plugin;
@@ -64,7 +64,7 @@ class GeneratePlugin implements Plugin<Project> {
 			generatePluginExtension.setSkipSequences(false);
 		}
 		if (!generatePluginExtension.getJpaPropertiesProvider().isPresent()) {
-			generatePluginExtension.setJpaProperties(new Properties());
+			generatePluginExtension.setJpaProperties(new HashMap<>());
 		}
 		if (!generatePluginExtension.getOutputPathProvider().isPresent()) {
 			String filePath = generatePluginExtension.getAction() == Action.UPDATE ? "scripts/" : "scripts/database.sql";
