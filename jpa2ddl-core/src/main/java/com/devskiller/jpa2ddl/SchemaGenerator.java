@@ -39,13 +39,11 @@ class SchemaGenerator {
 
 		if (settings.getGenerationMode() == GenerationMode.DATABASE) {
 
-			String dbUrl = engineDecorator.decorateConnectionString(DB_URL);
-
 			if (settings.getAction() == Action.UPDATE) {
 				outputFile = FileResolver.resolveNextMigrationFile(settings.getOutputPath());
 			}
 
-			settings.getJpaProperties().setProperty("hibernate.connection.url", dbUrl);
+			settings.getJpaProperties().setProperty("hibernate.connection.url", getDbUrl(engineDecorator));
 			settings.getJpaProperties().setProperty("hibernate.connection.username", "sa");
 			settings.getJpaProperties().setProperty("hibernate.connection.password", "");
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.action", settings.getAction().toSchemaGenerationAction());
@@ -80,7 +78,7 @@ class SchemaGenerator {
 		} else {
 			Connection connection = null;
 			if (settings.getAction() == Action.UPDATE) {
-				connection = DriverManager.getConnection(DB_URL, "SA", "");
+				connection = DriverManager.getConnection(getDbUrl(engineDecorator), "SA", "");
 
 				engineDecorator.decorateDatabaseInitialization(connection);
 
@@ -109,6 +107,10 @@ class SchemaGenerator {
 				Files.write(outputFile.toPath(), lines);
 			}
 		}
+	}
+
+	private String getDbUrl(EngineDecorator engineDecorator) {
+		return engineDecorator.decorateConnectionString(DB_URL);
 	}
 
 	private void validateSettings(GeneratorSettings settings) {
