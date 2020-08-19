@@ -4,7 +4,7 @@
 
     <groupId>com.devskiller.jpa2ddl</groupId>
     <artifactId>jpa2ddl-parent</artifactId>
-    <version>0.9.14-SNAPSHOT</version>
+    <version>0.9.14</version>
 
     <name>${project.artifactId}</name>
     <description>jpa2ddl parent</description>
@@ -32,7 +32,7 @@
         <connection>scm:git:https://github.com/Devskiller/jpa2ddl</connection>
         <developerConnection>scm:git:git@github.com:Devskiller/jpa2ddl</developerConnection>
         <url>https://github.com/Devskiller/jpa2ddl</url>
-        <tag>HEAD</tag>
+        <tag>0.9.14</tag>
     </scm>
 
     <modules>
