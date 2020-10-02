@@ -1,6 +1,11 @@
+sudo: required
+dist: trusty
+group: edge
+
 language: java
 
 jdk:
+  - oraclejdk8
   - oraclejdk11
 
 script: ./mvnw package
