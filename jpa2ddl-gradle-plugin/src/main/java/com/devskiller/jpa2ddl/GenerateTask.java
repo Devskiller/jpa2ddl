@@ -46,6 +46,7 @@ public class GenerateTask extends DefaultTask {
 	GeneratorSettings getSettings() {
 		return new GeneratorSettings(extension.getGenerationMode(),
 				extension.getOutputPath(),
+				extension.getOutputPath(), //fixme use generated-sources
 				extension.getPackages(),
 				extension.getAction(),
 				convertToProperties(extension.getJpaProperties()),

@@ -3,12 +3,15 @@ package com.devskiller.jpa2ddl;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.querydsl.sql.codegen.MetaDataExporter;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -47,6 +50,7 @@ class SchemaGenerator {
 			settings.getJpaProperties().setProperty("hibernate.connection.username", "sa");
 			settings.getJpaProperties().setProperty("hibernate.connection.password", "");
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.action", settings.getAction().toSchemaGenerationAction());
+			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.database.action", settings.getAction().toSchemaGenerationAction());
 
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.drop-target", outputFile.getAbsolutePath());
@@ -90,6 +94,16 @@ class SchemaGenerator {
 			}
 
 			metadata.buildMetadata().buildSessionFactory().close();
+
+			if (connection != null) {
+				DatabaseMetaData metaData = connection.getMetaData();
+
+				MetaDataExporter metaDataExporter = new MetaDataExporter();
+				metaDataExporter.setTargetFolder(settings.getQueryDslOutputPath());
+				metaDataExporter.export(metaData);
+			} else {
+				// support other activies than update - bootsrap database manually
+			}
 
 			if (connection != null) {
 				connection.close();
