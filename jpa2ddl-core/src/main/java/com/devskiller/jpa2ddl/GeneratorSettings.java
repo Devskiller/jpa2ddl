@@ -9,6 +9,7 @@ class GeneratorSettings {
 	private final GenerationMode generationMode;
 	private final File outputPath;
 	private final File queryDslOutputPath;
+	private final String queryDslOutputPackage;
 	private final List<String> packages;
 	private final Action action;
 	private final Properties jpaProperties;
@@ -16,11 +17,12 @@ class GeneratorSettings {
 	private final String delimiter;
 	private final boolean skipSequences;
 
-	GeneratorSettings(GenerationMode generationMode, File outputPath, File queryDslOutputPath, List<String> packages, Action action,
-	                  Properties jpaProperties, boolean formatOutput, String delimiter, boolean skipSequences) {
+	GeneratorSettings(GenerationMode generationMode, File outputPath, File queryDslOutputPath, String queryDslOutputPackage, List<String> packages, Action action,
+					  Properties jpaProperties, boolean formatOutput, String delimiter, boolean skipSequences) {
 		this.generationMode = generationMode;
 		this.outputPath = outputPath;
 		this.queryDslOutputPath = queryDslOutputPath;
+		this.queryDslOutputPackage = queryDslOutputPackage;
 		this.packages = packages;
 		this.action = action;
 		this.jpaProperties = jpaProperties;
@@ -31,6 +33,10 @@ class GeneratorSettings {
 
 	GenerationMode getGenerationMode() {
 		return generationMode;
+	}
+
+	String getQueryDslOutputPackage() {
+		return queryDslOutputPackage;
 	}
 
 	File getOutputPath() {

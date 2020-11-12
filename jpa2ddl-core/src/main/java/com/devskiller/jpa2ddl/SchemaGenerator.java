@@ -100,6 +100,9 @@ class SchemaGenerator {
 
 				MetaDataExporter metaDataExporter = new MetaDataExporter();
 				metaDataExporter.setTargetFolder(settings.getQueryDslOutputPath());
+				if (settings.getQueryDslOutputPackage() != null) {
+					metaDataExporter.setPackageName(settings.getQueryDslOutputPackage());
+				}
 				metaDataExporter.export(metaData);
 			} else {
 				// support other activies than update - bootsrap database manually

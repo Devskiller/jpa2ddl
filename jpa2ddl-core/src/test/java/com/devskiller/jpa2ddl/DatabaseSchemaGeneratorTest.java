@@ -24,7 +24,7 @@ public class DatabaseSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
-				outputFile, Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";", false));
+				outputFile, null, Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";", false));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
@@ -40,7 +40,7 @@ public class DatabaseSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
-				outputFile, Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP, new Properties(), true, ";", false));
+				outputFile, null, Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP, new Properties(), true, ";", false));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
@@ -56,7 +56,7 @@ public class DatabaseSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
-				outputFile, Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.CREATE, new Properties(), true, ";", false));
+				outputFile, null, Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.CREATE, new Properties(), true, ";", false));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));

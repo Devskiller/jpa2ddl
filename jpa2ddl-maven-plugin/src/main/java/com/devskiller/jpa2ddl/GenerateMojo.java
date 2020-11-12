@@ -39,6 +39,12 @@ public class GenerateMojo extends AbstractMojo {
 	private File queryDslOutputPath;
 
 	/**
+	 * Package of the generated QueryDSL classes.
+	 */
+	@Parameter
+	private String queryDslOutputPackage;
+
+	/**
 	 * List of packages containing JPA entities
 	 */
 	@Parameter(required = true)
@@ -120,7 +126,7 @@ public class GenerateMojo extends AbstractMojo {
 		}
 
 		GeneratorSettings settings = new GeneratorSettings(
-				generationMode, outputPath, queryDslOutputPath, packages, action, jpaProperties, formatOutput, delimiter, skipSequences);
+				generationMode, outputPath, queryDslOutputPath, queryDslOutputPackage, packages, action, jpaProperties, formatOutput, delimiter, skipSequences);
 		try {
 			schemaGenerator.generate(settings);
 			getLog().info("Schema saved to " + outputPath);
