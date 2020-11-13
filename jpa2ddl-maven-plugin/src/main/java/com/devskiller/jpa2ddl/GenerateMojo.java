@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -31,18 +32,6 @@ public class GenerateMojo extends AbstractMojo {
 	 */
 	@Parameter
 	private File outputPath;
-
-	/**
-	 * Output path for the generated QueryDSL classes.
-	 */
-	@Parameter
-	private File queryDslOutputPath;
-
-	/**
-	 * Package of the generated QueryDSL classes.
-	 */
-	@Parameter
-	private String queryDslOutputPackage;
 
 	/**
 	 * List of packages containing JPA entities
@@ -92,13 +81,19 @@ public class GenerateMojo extends AbstractMojo {
 	@Parameter(defaultValue = "DATABASE")
 	private GenerationMode generationMode;
 
+	/**
+	 * Additional properties for external processors
+	 */
+	@Parameter
+	private Properties processorProperties;
+
 	@Parameter(defaultValue = "${project}", readonly = true)
 	private MavenProject project;
 
 	@Parameter(defaultValue = "${plugin}", readonly = true)
 	private PluginDescriptor descriptor;
 
-	public void execute() throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException {
 		getLog().info("Running schema generation...");
 		if (isNull(jpaProperties)) {
 			jpaProperties = new Properties();
@@ -112,10 +107,6 @@ public class GenerateMojo extends AbstractMojo {
 			}
 		}
 
-		if (queryDslOutputPath == null) {
-			queryDslOutputPath = Paths.get(project.getBuild().getDirectory()).resolve("generated-sources/querydsl").toFile();
-		}
-
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 		List<String> compileSourceRoots = project.getCompileSourceRoots();
 		compileSourceRoots.stream().map(this::mapPathToURL).forEach(url -> descriptor.getClassRealm().addURL(url));
@@ -126,7 +117,7 @@ public class GenerateMojo extends AbstractMojo {
 		}
 
 		GeneratorSettings settings = new GeneratorSettings(
-				generationMode, outputPath, queryDslOutputPath, queryDslOutputPackage, packages, action, jpaProperties, formatOutput, delimiter, skipSequences);
+				generationMode, outputPath, packages, action, jpaProperties, formatOutput, delimiter, skipSequences, processorProperties);
 		try {
 			schemaGenerator.generate(settings);
 			getLog().info("Schema saved to " + outputPath);

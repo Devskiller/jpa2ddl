@@ -1,23 +1,21 @@
 package com.devskiller.jpa2ddl;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.querydsl.sql.codegen.MetaDataExporter;
+import com.devskiller.jpa2ddl.engines.EngineDecorator;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
+import org.reflections8.Reflections;
 
-import com.devskiller.jpa2ddl.engines.EngineDecorator;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 class SchemaGenerator {
 
@@ -80,12 +78,10 @@ class SchemaGenerator {
 			export.setOutputFile(outputFile.getAbsolutePath());
 			export.execute(EnumSet.of(TargetType.SCRIPT), settings.getAction().toSchemaExportAction(), metadata.buildMetadata());
 		} else {
-			Connection connection = null;
+			Connection connection = DriverManager.getConnection(getDbUrl(engineDecorator), "SA", "");
+			engineDecorator.decorateDatabaseInitialization(connection);
+
 			if (settings.getAction() == Action.UPDATE) {
-				connection = DriverManager.getConnection(getDbUrl(engineDecorator), "SA", "");
-
-				engineDecorator.decorateDatabaseInitialization(connection);
-
 				List<Path> resolvedMigrations = FileResolver.resolveExistingMigrations(settings.getOutputPath(), false, true);
 				for (Path resolvedMigration : resolvedMigrations) {
 					String statement = new String(Files.readAllBytes(resolvedMigration));
@@ -95,22 +91,9 @@ class SchemaGenerator {
 
 			metadata.buildMetadata().buildSessionFactory().close();
 
-			if (connection != null) {
-				DatabaseMetaData metaData = connection.getMetaData();
+			executePostProcessors(settings, connection);
 
-				MetaDataExporter metaDataExporter = new MetaDataExporter();
-				metaDataExporter.setTargetFolder(settings.getQueryDslOutputPath());
-				if (settings.getQueryDslOutputPackage() != null) {
-					metaDataExporter.setPackageName(settings.getQueryDslOutputPackage());
-				}
-				metaDataExporter.export(metaData);
-			} else {
-				// support other activies than update - bootsrap database manually
-			}
-
-			if (connection != null) {
-				connection.close();
-			}
+			connection.close();
 		}
 
 		if (outputFile.exists()) {
@@ -123,6 +106,17 @@ class SchemaGenerator {
 						.collect(Collectors.toList());
 				Files.write(outputFile.toPath(), lines);
 			}
+		}
+	}
+
+	private void executePostProcessors(GeneratorSettings settings, Connection connection) throws Exception {
+		Reflections reflections = new Reflections(".*");
+
+		Set<Class<? extends SchemaProcessor>> schemaProcessorClasses = reflections.getSubTypesOf(SchemaProcessor.class);
+
+		for (Class<? extends SchemaProcessor> schemaProcessorClass : schemaProcessorClasses) {
+			SchemaProcessor schemaProcessor = schemaProcessorClass.getDeclaredConstructor().newInstance();
+			schemaProcessor.postProcess(connection, settings.getProcessorProperties());
 		}
 	}
 

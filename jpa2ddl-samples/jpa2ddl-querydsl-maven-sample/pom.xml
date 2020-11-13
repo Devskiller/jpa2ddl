@@ -8,10 +8,10 @@
         <version>0.9.17-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jpa2ddl-flyway-maven-sample</artifactId>
+    <artifactId>jpa2ddl-querydsl-maven-sample</artifactId>
 
     <name>${project.artifactId}</name>
-    <description>jpa2ddl flyway with maven sample</description>
+    <description>jpa2ddl querydsl with maven sample</description>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -19,9 +19,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaee-api-version>7.0</javaee-api-version>
         <hibernate-version>5.2.15.Final</hibernate-version>
-
-        <migrations-dir>${basedir}/src/main/resources/migrations/</migrations-dir>
-        <db-file>${basedir}/src/main/resources/db/flyway</db-file>
     </properties>
 
     <dependencies>
@@ -57,23 +54,25 @@
                     <packages>
                         <package>oss.devskiller.model</package>
                     </packages>
-                    <outputPath>${migrations-dir}</outputPath>
                     <action>UPDATE</action>
+                    <processorProperties>
+                        <property>
+                            <name>queryDslOutputPath</name>
+                            <value>${project.build.directory}/generated-sources/query-dsl</value>
+                        </property>
+                        <property>
+                            <name>queryDslOutputPackage</name>
+                            <value>oss.devskiller.querydsl</value>
+                        </property>
+                    </processorProperties>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>5.0.7</version>
-                <configuration>
-                    <driver>org.h2.Driver</driver>
-                    <url>jdbc:h2:file:${db-file}</url>
-                    <locations>
-                        <location>filesystem:${migrations-dir}</location>
-                    </locations>
-                    <sqlMigrationPrefix>v</sqlMigrationPrefix>
-                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.devskiller.jpa2ddl</groupId>
+                        <artifactId>jpa2ddl-querydsl-processor</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

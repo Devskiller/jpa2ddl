@@ -21,7 +21,9 @@
     </properties>
 
     <modules>
-        <module>jpa2ddl-flyway-maven-sample</module>
+<!--        temporarily removed as plugin dependency in querydsl module failes the build -->
+<!--        <module>jpa2ddl-flyway-maven-sample</module>-->
+        <module>jpa2ddl-querydsl-maven-sample</module>
     </modules>
 
     <build>

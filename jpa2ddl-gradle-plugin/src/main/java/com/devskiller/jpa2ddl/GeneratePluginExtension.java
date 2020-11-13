@@ -21,6 +21,7 @@ public class GeneratePluginExtension {
 	private final Property<Boolean> formatOutput;
 	private final Property<Boolean> skipSequences;
 	private final Property<String> delimiter;
+	private final MapProperty<String, String> processorProperties;
 
 	public GeneratePluginExtension(Project project) {
 		outputPath = project.getObjects().fileProperty();
@@ -31,6 +32,7 @@ public class GeneratePluginExtension {
 		formatOutput = project.getObjects().property(Boolean.class);
 		skipSequences = project.getObjects().property(Boolean.class);
 		delimiter = project.getObjects().property(String.class);
+		processorProperties = project.getObjects().mapProperty(String.class, String.class);
 	}
 
 	public File getOutputPath() {
@@ -97,6 +99,14 @@ public class GeneratePluginExtension {
 		this.delimiter.set(delimiter);
 	}
 
+	public Map<String, String> getProcessorProperties() {
+		return processorProperties.get();
+	}
+
+	public void setProcessorProperties(Map<String, String> processorProperties) {
+		this.processorProperties.set(processorProperties);
+	}
+
 	public Provider<File> getOutputPathProvider() {
 		return outputPath.getAsFile();
 	}
@@ -115,6 +125,10 @@ public class GeneratePluginExtension {
 
 	public Provider<Map<String, String>> getJpaPropertiesProvider() {
 		return jpaProperties;
+	}
+
+	public Provider<Map<String, String>> getProcessorPropertiesProvider() {
+		return processorProperties;
 	}
 
 	public Provider<Boolean> getFormatOutputProvider() {

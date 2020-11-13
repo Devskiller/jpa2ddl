@@ -46,14 +46,13 @@ public class GenerateTask extends DefaultTask {
 	GeneratorSettings getSettings() {
 		return new GeneratorSettings(extension.getGenerationMode(),
 				extension.getOutputPath(),
-				extension.getOutputPath(), //fixme use generated-sources
-                null,//fixme
 				extension.getPackages(),
 				extension.getAction(),
 				convertToProperties(extension.getJpaProperties()),
 				extension.getFormatOutput(),
 				extension.getDelimiter(),
-				extension.getSkipSequences());
+				extension.getSkipSequences(),
+				convertToProperties(extension.getProcessorProperties()));
 	}
 
 	public void setOutputClassesDirs(Set<File> outputClassesDirs) {

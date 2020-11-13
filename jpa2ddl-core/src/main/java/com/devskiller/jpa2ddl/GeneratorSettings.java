@@ -8,43 +8,34 @@ class GeneratorSettings {
 
 	private final GenerationMode generationMode;
 	private final File outputPath;
-	private final File queryDslOutputPath;
-	private final String queryDslOutputPackage;
 	private final List<String> packages;
 	private final Action action;
 	private final Properties jpaProperties;
 	private final boolean formatOutput;
 	private final String delimiter;
 	private final boolean skipSequences;
+	private final Properties processorProperties;
 
-	GeneratorSettings(GenerationMode generationMode, File outputPath, File queryDslOutputPath, String queryDslOutputPackage, List<String> packages, Action action,
-					  Properties jpaProperties, boolean formatOutput, String delimiter, boolean skipSequences) {
+	GeneratorSettings(GenerationMode generationMode, File outputPath, List<String> packages, Action action,
+	                  Properties jpaProperties, boolean formatOutput, String delimiter,
+	                  boolean skipSequences, Properties processorProperties) {
 		this.generationMode = generationMode;
 		this.outputPath = outputPath;
-		this.queryDslOutputPath = queryDslOutputPath;
-		this.queryDslOutputPackage = queryDslOutputPackage;
 		this.packages = packages;
 		this.action = action;
 		this.jpaProperties = jpaProperties;
 		this.formatOutput = formatOutput;
 		this.delimiter = delimiter;
 		this.skipSequences = skipSequences;
+		this.processorProperties = processorProperties;
 	}
 
 	GenerationMode getGenerationMode() {
 		return generationMode;
 	}
 
-	String getQueryDslOutputPackage() {
-		return queryDslOutputPackage;
-	}
-
 	File getOutputPath() {
 		return outputPath;
-	}
-
-	File getQueryDslOutputPath() {
-		return queryDslOutputPath;
 	}
 
 	List<String> getPackages() {
@@ -67,7 +58,11 @@ class GeneratorSettings {
 		return delimiter;
 	}
 
-	public boolean isSkipSequences() {
+	boolean isSkipSequences() {
 		return skipSequences;
+	}
+
+	Properties getProcessorProperties() {
+		return processorProperties;
 	}
 }
