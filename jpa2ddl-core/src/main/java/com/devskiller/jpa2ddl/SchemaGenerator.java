@@ -38,13 +38,15 @@ class SchemaGenerator {
 
 		EngineDecorator engineDecorator = EngineDecorator.getEngineDecorator(settings.getJpaProperties().getProperty(HIBERNATE_DIALECT));
 
+		String dbUrl = getDbUrl(engineDecorator);
+
 		if (settings.getGenerationMode() == GenerationMode.DATABASE) {
 
 			if (settings.getAction() == Action.UPDATE) {
 				outputFile = FileResolver.resolveNextMigrationFile(settings.getOutputPath());
 			}
 
-			settings.getJpaProperties().setProperty("hibernate.connection.url", getDbUrl(engineDecorator));
+			settings.getJpaProperties().setProperty("hibernate.connection.url", dbUrl);
 			settings.getJpaProperties().setProperty("hibernate.connection.username", "sa");
 			settings.getJpaProperties().setProperty("hibernate.connection.password", "");
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.action", settings.getAction().toSchemaGenerationAction());
@@ -78,7 +80,8 @@ class SchemaGenerator {
 			export.setOutputFile(outputFile.getAbsolutePath());
 			export.execute(EnumSet.of(TargetType.SCRIPT), settings.getAction().toSchemaExportAction(), metadata.buildMetadata());
 		} else {
-			Connection connection = DriverManager.getConnection(getDbUrl(engineDecorator), "SA", "");
+			Class.forName("org.h2.Driver"); // walkaround for the "No suitable driver found" caused by driver being not registered in the DriverManager
+			Connection connection = DriverManager.getConnection(dbUrl, "SA", "");
 			engineDecorator.decorateDatabaseInitialization(connection);
 
 			if (settings.getAction() == Action.UPDATE) {
