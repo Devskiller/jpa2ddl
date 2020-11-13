@@ -6,6 +6,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
 import org.reflections8.Reflections;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -113,7 +115,10 @@ class SchemaGenerator {
 	}
 
 	private void executePostProcessors(GeneratorSettings settings, Connection connection) throws Exception {
-		Reflections reflections = new Reflections(".*");
+		Reflections reflections = new Reflections(ConfigurationBuilder.build(".*")
+				.setExpandSuperTypes(false)
+				.setScanners(new SubTypesScanner(true))
+		);
 
 		Set<Class<? extends SchemaProcessor>> schemaProcessorClasses = reflections.getSubTypesOf(SchemaProcessor.class);
 
