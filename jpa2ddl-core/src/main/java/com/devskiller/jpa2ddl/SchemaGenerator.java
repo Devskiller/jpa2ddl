@@ -10,6 +10,8 @@ import org.reflections8.scanners.SubTypesScanner;
 import org.reflections8.util.ConfigurationBuilder;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -115,10 +117,11 @@ class SchemaGenerator {
 	}
 
 	private void executePostProcessors(GeneratorSettings settings, Connection connection) throws Exception {
-		Reflections reflections = new Reflections(ConfigurationBuilder.build(".*")
+		ConfigurationBuilder configuration = ConfigurationBuilder.build(".*")
 				.setExpandSuperTypes(false)
-				.setScanners(new SubTypesScanner(true))
-		);
+				.setScanners(new SubTypesScanner(true));
+		configuration.setUrls(getExistingUrls(configuration.getUrls()));
+		Reflections reflections = new Reflections(configuration);
 
 		Set<Class<? extends SchemaProcessor>> schemaProcessorClasses = reflections.getSubTypesOf(SchemaProcessor.class);
 
@@ -126,6 +129,18 @@ class SchemaGenerator {
 			SchemaProcessor schemaProcessor = schemaProcessorClass.getDeclaredConstructor().newInstance();
 			schemaProcessor.postProcess(connection, settings.getProcessorProperties());
 		}
+	}
+
+	private Set<URL> getExistingUrls(Set<URL> urls) {
+		return urls.stream()
+				.filter(url -> {
+					try {
+						return new File(url.toURI()).exists();
+					} catch (URISyntaxException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.collect(Collectors.toSet());
 	}
 
 	private String getDbUrl(EngineDecorator engineDecorator) {
