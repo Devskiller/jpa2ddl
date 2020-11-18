@@ -6,8 +6,10 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
 
+import com.devskiller.jpa2ddl.dialects.H2PostgreSQL95Dialect;
 import org.hibernate.dialect.MySQL57Dialect;
 import org.hibernate.dialect.Oracle12cDialect;
+import org.hibernate.dialect.PostgreSQL95Dialect;
 import org.hibernate.dialect.PostgreSQL9Dialect;
 import org.junit.Rule;
 import org.junit.Test;
@@ -113,6 +115,31 @@ public class DatabaseSchemaUpdateTest {
 		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v1__jpa2ddl.sql")));
 		assertThat(sql).contains("create table User");
 		assertThat(sql).doesNotContain("drop table User");
+	}
+
+	@Test
+	public void shouldGenerateDefaultSchemaUpdateWithPostgresDialect() throws Exception {
+		// given
+		File outputPath = tempFolder.newFolder();
+
+		Files.copy(Paths.get(getClass().getClassLoader().getResource("sample_postgres_migration/v1__jpa2ddl_init.sql").toURI()),
+				outputPath.toPath().resolve("v1__jpa2ddl_init.sql"));
+
+		Properties jpaProperties = new Properties();
+		jpaProperties.setProperty("hibernate.dialect", H2PostgreSQL95Dialect.class.getCanonicalName());
+
+		SchemaGenerator schemaGenerator = new SchemaGenerator();
+
+		// when
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.UPDATE, jpaProperties, true, ";", true, null));
+
+		// then
+		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v2__jpa2ddl.sql")));
+		assertThat(sql).containsIgnoringCase("alter table if exists User");
+		assertThat(sql).containsIgnoringCase("add column email");
+		assertThat(sql).doesNotContain("create table User");
+		assertThat(sql).doesNotContain("create sequence");
 	}
 
 	@Test

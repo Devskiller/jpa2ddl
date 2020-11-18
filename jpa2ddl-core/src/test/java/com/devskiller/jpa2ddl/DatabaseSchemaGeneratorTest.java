@@ -30,7 +30,7 @@ public class DatabaseSchemaGeneratorTest {
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
 		assertThat(sql).contains("create table User");
-		assertThat(sql).contains("drop table User");
+		assertThat(sql).contains("drop table if exists User");
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class DatabaseSchemaGeneratorTest {
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
 		assertThat(sql).doesNotContain("create table User");
-		assertThat(sql).contains("drop table User");
+		assertThat(sql).contains("drop table if exists User");
 	}
 
 	@Test
