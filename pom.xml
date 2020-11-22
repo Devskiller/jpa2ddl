@@ -39,7 +39,7 @@
         <module>jpa2ddl-core</module>
         <module>jpa2ddl-maven-plugin</module>
         <module>jpa2ddl-querydsl-processor</module>
-        <module>jpa2ddl-samples</module> <!-- samples module cannot be last because of the https://issues.sonatype.org/browse/NEXUS-9138 -->
+<!--        <module>jpa2ddl-samples</module> &lt;!&ndash; samples module cannot be last because of the https://issues.sonatype.org/browse/NEXUS-9138 &ndash;&gt;-->
         <module>jpa2ddl-gradle-plugin</module>
     </modules>
 
