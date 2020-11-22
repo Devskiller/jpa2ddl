@@ -8,7 +8,7 @@ jdk:
   - oraclejdk8
   - oraclejdk11
 
-script: ./mvnw package
+script: ./mvnw install
 
 cache:
   directories:
