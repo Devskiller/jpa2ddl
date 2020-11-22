@@ -1,19 +1,18 @@
 package com.devskiller.jpa2ddl;
 
+import com.devskiller.jpa2ddl.dialects.H2PostgreSQL95Dialect;
+import org.hibernate.dialect.MySQL57Dialect;
+import org.hibernate.dialect.Oracle12cDialect;
+import org.hibernate.dialect.PostgreSQL10Dialect;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
-
-import com.devskiller.jpa2ddl.dialects.H2PostgreSQL95Dialect;
-import org.hibernate.dialect.MySQL57Dialect;
-import org.hibernate.dialect.Oracle12cDialect;
-import org.hibernate.dialect.PostgreSQL95Dialect;
-import org.hibernate.dialect.PostgreSQL9Dialect;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -103,7 +102,8 @@ public class DatabaseSchemaUpdateTest {
 		// given
 		File outputPath = tempFolder.newFolder();
 		Properties jpaProperties = new Properties();
-		jpaProperties.setProperty("hibernate.dialect", PostgreSQL9Dialect.class.getCanonicalName());
+		jpaProperties.setProperty("hibernate.dialect", PostgreSQL10Dialect.class.getCanonicalName());
+		jpaProperties.setProperty("hibernate.default_schema", "public");
 
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 
@@ -113,8 +113,8 @@ public class DatabaseSchemaUpdateTest {
 
 		// then
 		String sql = new String(Files.readAllBytes(outputPath.toPath().resolve("v1__jpa2ddl.sql")));
-		assertThat(sql).contains("create table User");
-		assertThat(sql).doesNotContain("drop table User");
+		assertThat(sql).contains("create table public.User");
+		assertThat(sql).doesNotContain("drop table public.User");
 	}
 
 	@Test
