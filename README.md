@@ -24,6 +24,19 @@ Why another tool to dump the JPA schema? All tools that we've found were related
 - `generationMode`: schema generation mode. By default `DATABASE`. Possible values:
   - `DATABASE`: generation based on setting up embedded database and dumping the schema
   - `METADATA`: generation based on static metadata
+- `processorProperties`: properties passed to external `SchemaProcessor` classes
+
+### Custom H2 dialects
+
+H2 is often used to imitate native database engines, however with usage going beyond simple SQL it has huge limitations.
+To resolve some of them related to sequences we provide custom database dialects.
+
+- `com.devskiller.jpa2ddl.dialects.H2PostgreSQL95Dialect`: Postgres 9.5 dialect for H2
+- `com.devskiller.jpa2ddl.dialects.H2PostgreSQL10Dialect`: Postgres 10 dialect for H2
+- `com.devskiller.jpa2ddl.dialects.H2MySQL57Dialect`: MySQL 5.7 dialect for H2
+- `com.devskiller.jpa2ddl.dialects.H2MySQL80Dialect`: MySQL 8.0 dialect for H2
+
+If you need different dialects please build them using above examples.
 
 ## Maven Plugin
 
@@ -156,3 +169,61 @@ jpa2ddl {
     packages = ['com.test.model']
 }
 ```
+
+## Extending jpa2ddl with SchemaProcessors
+
+Sometimes more actions that just saving the database migrations are needed. 
+Example of such use case is when there is a need to generate QueryDSL or JOOQ mappings.
+The `SchemaProcessor` mechanism in jpa2ddl resolves such needs.
+
+### QueryDSL processor
+
+Additional dependency `jpa2ddl-querydsl-processor` provides the processor to generate mappings for QueryDSL.
+To enable it:
+- add a `jpa2ddl-querydsl-processor` dependency to the plugin (`plugin->dependencies->dependency`)
+- configure the processor in the `plugin->configiration->processorProperties` section:
+  - `queryDslOutputPath`: output path for generated mapping classes
+  - `queryDslOutputPackage`: optionally set package for generated classes
+
+```xml
+ <build>
+        <plugins>
+            <plugin>
+                <groupId>com.devskiller.jpa2ddl</groupId>
+                <artifactId>jpa2ddl-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <packages>
+                        <package>oss.devskiller.model</package>
+                    </packages>
+                    <action>UPDATE</action>
+                    <processorProperties>
+                        <property>
+                            <name>queryDslOutputPath</name>
+                            <value>${project.build.directory}/generated-sources/query-dsl</value>
+                        </property>
+                        <property>
+                            <name>queryDslOutputPackage</name>
+                            <value>oss.devskiller.querydsl</value>
+                        </property>
+                    </processorProperties>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.devskiller.jpa2ddl</groupId>
+                        <artifactId>jpa2ddl-querydsl-processor</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+``` 
+
+### Building custom SchemaProcessors
+
+It's possible to build and inject your custom schema processors to jpa2ddl.
+The only thing you need to do is to implement the `com.devskiller.jpa2ddl.SchemaProcessor` interface, and add the jar with our implementation as a dependency for the plugin. 
+
+Please refer to the [jpa2ddl-querydsl-processor](https://github.com/Devskiller/jpa2ddl/tree/master/jpa2ddl-querydsl-processor) to see an example.

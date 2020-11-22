@@ -17,8 +17,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -69,8 +71,8 @@ class FileResolver {
 				.collect(Collectors.toList());
 	}
 
-	static List<String> listClassNamesInPackage(String packageName) throws Exception {
-		List<String> classes = new ArrayList<>();
+	static Set<String> listClassNamesInPackage(String packageName) throws Exception {
+		Set<String> classes = new HashSet<>();
 		Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(packageName.replace('.', File.separatorChar));
 		if (!resources.hasMoreElements()) {
 			throw new IllegalStateException("No package found: " + packageName);
@@ -80,7 +82,7 @@ class FileResolver {
 			URL resource = resources.nextElement();
 			Files.walkFileTree(Paths.get(resource.toURI()), new SimpleFileVisitor<Path>() {
 				@Override
-				public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+				public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
 					if (pathMatcher.matches(path.getFileName())) {
 						try {
 							String className = Paths.get(resource.toURI()).relativize(path).toString().replace(File.separatorChar, '.');

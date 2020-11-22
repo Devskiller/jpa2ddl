@@ -42,14 +42,7 @@
                 <groupId>com.devskiller.jpa2ddl</groupId>
                 <artifactId>jpa2ddl-maven-plugin</artifactId>
                 <version>${project.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <extensions>true</extensions>
                 <configuration>
                     <packages>
                         <package>oss.devskiller.model</package>
