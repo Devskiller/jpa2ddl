@@ -24,12 +24,12 @@ public class MetadataSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.METADATA, outputFile,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";", false));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";", false, null));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
 		assertThat(sql).contains("create table User");
-		assertThat(sql).contains("drop table User");
+		assertThat(sql).contains("drop table if exists User");
 	}
 
 	@Test
@@ -40,12 +40,12 @@ public class MetadataSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.METADATA, outputFile,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP, new Properties(), true, ";", false));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP, new Properties(), true, ";", false, null));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
 		assertThat(sql).doesNotContain("create table User");
-		assertThat(sql).contains("drop table User");
+		assertThat(sql).contains("drop table if exists User");
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class MetadataSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.METADATA, outputFile,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.CREATE, new Properties(), true, ";", false));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.CREATE, new Properties(), true, ";", false, null));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));

@@ -14,9 +14,11 @@ class GeneratorSettings {
 	private final boolean formatOutput;
 	private final String delimiter;
 	private final boolean skipSequences;
+	private final Properties processorProperties;
 
 	GeneratorSettings(GenerationMode generationMode, File outputPath, List<String> packages, Action action,
-	                  Properties jpaProperties, boolean formatOutput, String delimiter, boolean skipSequences) {
+	                  Properties jpaProperties, boolean formatOutput, String delimiter,
+	                  boolean skipSequences, Properties processorProperties) {
 		this.generationMode = generationMode;
 		this.outputPath = outputPath;
 		this.packages = packages;
@@ -25,6 +27,7 @@ class GeneratorSettings {
 		this.formatOutput = formatOutput;
 		this.delimiter = delimiter;
 		this.skipSequences = skipSequences;
+		this.processorProperties = processorProperties;
 	}
 
 	GenerationMode getGenerationMode() {
@@ -55,7 +58,11 @@ class GeneratorSettings {
 		return delimiter;
 	}
 
-	public boolean isSkipSequences() {
+	boolean isSkipSequences() {
 		return skipSequences;
+	}
+
+	Properties getProcessorProperties() {
+		return processorProperties;
 	}
 }

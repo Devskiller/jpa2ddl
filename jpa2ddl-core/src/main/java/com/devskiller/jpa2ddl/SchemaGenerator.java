@@ -1,20 +1,25 @@
 package com.devskiller.jpa2ddl;
 
+import com.devskiller.jpa2ddl.engines.EngineDecorator;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.schema.TargetType;
+import org.reflections8.Reflections;
+import org.reflections8.scanners.SubTypesScanner;
+import org.reflections8.util.ConfigurationBuilder;
+
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.schema.TargetType;
-
-import com.devskiller.jpa2ddl.engines.EngineDecorator;
 
 class SchemaGenerator {
 
@@ -37,16 +42,19 @@ class SchemaGenerator {
 
 		EngineDecorator engineDecorator = EngineDecorator.getEngineDecorator(settings.getJpaProperties().getProperty(HIBERNATE_DIALECT));
 
+		String dbUrl = getDbUrl(engineDecorator);
+
 		if (settings.getGenerationMode() == GenerationMode.DATABASE) {
 
 			if (settings.getAction() == Action.UPDATE) {
 				outputFile = FileResolver.resolveNextMigrationFile(settings.getOutputPath());
 			}
 
-			settings.getJpaProperties().setProperty("hibernate.connection.url", getDbUrl(engineDecorator));
+			settings.getJpaProperties().setProperty("hibernate.connection.url", dbUrl);
 			settings.getJpaProperties().setProperty("hibernate.connection.username", "sa");
 			settings.getJpaProperties().setProperty("hibernate.connection.password", "");
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.action", settings.getAction().toSchemaGenerationAction());
+			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.database.action", settings.getAction().toSchemaGenerationAction());
 
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
 			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.drop-target", outputFile.getAbsolutePath());
@@ -76,12 +84,11 @@ class SchemaGenerator {
 			export.setOutputFile(outputFile.getAbsolutePath());
 			export.execute(EnumSet.of(TargetType.SCRIPT), settings.getAction().toSchemaExportAction(), metadata.buildMetadata());
 		} else {
-			Connection connection = null;
+			Class.forName("org.h2.Driver"); // walkaround for the "No suitable driver found" caused by driver being not registered in the DriverManager
+			Connection connection = DriverManager.getConnection(dbUrl, "SA", "");
+			engineDecorator.decorateDatabaseInitialization(connection);
+
 			if (settings.getAction() == Action.UPDATE) {
-				connection = DriverManager.getConnection(getDbUrl(engineDecorator), "SA", "");
-
-				engineDecorator.decorateDatabaseInitialization(connection);
-
 				List<Path> resolvedMigrations = FileResolver.resolveExistingMigrations(settings.getOutputPath(), false, true);
 				for (Path resolvedMigration : resolvedMigrations) {
 					String statement = new String(Files.readAllBytes(resolvedMigration));
@@ -91,9 +98,9 @@ class SchemaGenerator {
 
 			metadata.buildMetadata().buildSessionFactory().close();
 
-			if (connection != null) {
-				connection.close();
-			}
+			executePostProcessors(settings, connection);
+
+			connection.close();
 		}
 
 		if (outputFile.exists()) {
@@ -107,6 +114,33 @@ class SchemaGenerator {
 				Files.write(outputFile.toPath(), lines);
 			}
 		}
+	}
+
+	private void executePostProcessors(GeneratorSettings settings, Connection connection) throws Exception {
+		ConfigurationBuilder configuration = ConfigurationBuilder.build(".*")
+				.setExpandSuperTypes(false)
+				.setScanners(new SubTypesScanner(true));
+		configuration.setUrls(getExistingUrls(configuration.getUrls()));
+		Reflections reflections = new Reflections(configuration);
+
+		Set<Class<? extends SchemaProcessor>> schemaProcessorClasses = reflections.getSubTypesOf(SchemaProcessor.class);
+
+		for (Class<? extends SchemaProcessor> schemaProcessorClass : schemaProcessorClasses) {
+			SchemaProcessor schemaProcessor = schemaProcessorClass.getDeclaredConstructor().newInstance();
+			schemaProcessor.postProcess(connection, settings.getProcessorProperties());
+		}
+	}
+
+	private Set<URL> getExistingUrls(Set<URL> urls) {
+		return urls.stream()
+				.filter(url -> {
+					try {
+						return new File(url.toURI()).exists();
+					} catch (URISyntaxException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.collect(Collectors.toSet());
 	}
 
 	private String getDbUrl(EngineDecorator engineDecorator) {

@@ -21,15 +21,16 @@ public class DatabaseSchemaGeneratorTest {
 		// given
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 		File outputFile = tempFolder.newFile();
+		File outputDir = tempFolder.newFolder();
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";", false));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";", false, null));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
 		assertThat(sql).contains("create table User");
-		assertThat(sql).contains("drop table User");
+		assertThat(sql).contains("drop table if exists User");
 	}
 
 	@Test
@@ -40,12 +41,12 @@ public class DatabaseSchemaGeneratorTest {
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP, new Properties(), true, ";", false));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP, new Properties(), true, ";", false, null));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));
 		assertThat(sql).doesNotContain("create table User");
-		assertThat(sql).contains("drop table User");
+		assertThat(sql).contains("drop table if exists User");
 	}
 
 	@Test
@@ -53,10 +54,11 @@ public class DatabaseSchemaGeneratorTest {
 		// given
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 		File outputFile = tempFolder.newFile();
+		File outputDir = tempFolder.newFolder();
 
 		// when
 		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
-				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.CREATE, new Properties(), true, ";", false));
+				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.CREATE, new Properties(), true, ";", false, null));
 
 		// then
 		String sql = new String(Files.readAllBytes(outputFile.toPath()));

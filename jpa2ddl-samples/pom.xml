@@ -22,6 +22,7 @@
 
     <modules>
         <module>jpa2ddl-flyway-maven-sample</module>
+        <module>jpa2ddl-querydsl-maven-sample</module>
     </modules>
 
     <build>

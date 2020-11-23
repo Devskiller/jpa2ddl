@@ -51,7 +51,8 @@ public class GenerateTask extends DefaultTask {
 				convertToProperties(extension.getJpaProperties()),
 				extension.getFormatOutput(),
 				extension.getDelimiter(),
-				extension.getSkipSequences());
+				extension.getSkipSequences(),
+				convertToProperties(extension.getProcessorProperties()));
 	}
 
 	public void setOutputClassesDirs(Set<File> outputClassesDirs) {
