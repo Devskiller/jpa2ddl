@@ -14,7 +14,11 @@ class OracleDecorator extends EngineDecorator {
 	}
 
 	@Override
-	public void decorateDatabaseInitialization(Connection connection) throws SQLException {
-		connection.prepareStatement(SEQUENCES_VIEW + "\n" + EMPTY_SYNONYMS).execute();
+	public void decorateDatabaseInitialization(Connection connection) {
+		try {
+			connection.prepareStatement(SEQUENCES_VIEW + "\n" + EMPTY_SYNONYMS).execute();
+		} catch (SQLException e) {
+			throw new IllegalStateException("Cannot process database initialization", e);
+		}
 	}
 }

@@ -5,20 +5,19 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
-import org.reflections8.Reflections;
-import org.reflections8.scanners.SubTypesScanner;
-import org.reflections8.util.ConfigurationBuilder;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class SchemaGenerator {
@@ -26,6 +25,9 @@ class SchemaGenerator {
 	private static final String DB_URL = "jdbc:h2:mem:jpa2ddl";
 	private static final String HIBERNATE_DIALECT = "hibernate.dialect";
 	private static final String HIBERNATE_SCHEMA_FILTER_PROVIDER = "hibernate.hbm2ddl.schema_filter_provider";
+
+	private final ClassResolver classResolver = new ClassResolver();
+	private final DatabaseSchemaProcessor databaseSchemaProcessor = new DatabaseSchemaProcessor(classResolver);
 
 	void generate(GeneratorSettings settings) throws Exception {
 		validateSettings(settings);
@@ -40,67 +42,18 @@ class SchemaGenerator {
 
 		File outputFile = settings.getOutputPath();
 
-		EngineDecorator engineDecorator = EngineDecorator.getEngineDecorator(settings.getJpaProperties().getProperty(HIBERNATE_DIALECT));
-
-		String dbUrl = getDbUrl(engineDecorator);
-
-		if (settings.getGenerationMode() == GenerationMode.DATABASE) {
-
-			if (settings.getAction() == Action.UPDATE) {
-				outputFile = FileResolver.resolveNextMigrationFile(settings.getOutputPath());
-			}
-
-			settings.getJpaProperties().setProperty("hibernate.connection.url", dbUrl);
-			settings.getJpaProperties().setProperty("hibernate.connection.username", "sa");
-			settings.getJpaProperties().setProperty("hibernate.connection.password", "");
-			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.action", settings.getAction().toSchemaGenerationAction());
-			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.database.action", settings.getAction().toSchemaGenerationAction());
-
-			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.create-target", outputFile.getAbsolutePath());
-			settings.getJpaProperties().setProperty("javax.persistence.schema-generation.scripts.drop-target", outputFile.getAbsolutePath());
-
-			settings.getJpaProperties().setProperty("hibernate.hbm2ddl.delimiter", settings.getDelimiter());
-			settings.getJpaProperties().setProperty("hibernate.format_sql", String.valueOf(settings.isFormatOutput()));
-		}
-
-		MetadataSources metadata = new MetadataSources(
-				new StandardServiceRegistryBuilder()
-						.applySettings(settings.getJpaProperties())
-						.build());
-
-		for (String packageName: settings.getPackages().stream().sorted().collect(Collectors.toList())) {
-			FileResolver.listClassNamesInPackage(packageName).stream().sorted().forEach(metadata::addAnnotatedClassName);
-			metadata.addPackage(packageName);
-		}
-
-		if (settings.getAction() != Action.UPDATE) {
+		if (settings.getAction() == Action.UPDATE) {
+			outputFile = FileResolver.resolveNextMigrationFile(settings.getOutputPath());
+		} else {
 			Files.deleteIfExists(settings.getOutputPath().toPath());
 		}
 
 		if (settings.getGenerationMode() == GenerationMode.METADATA) {
-			SchemaExport export = new SchemaExport();
-			export.setFormat(settings.isFormatOutput());
-			export.setDelimiter(settings.getDelimiter());
-			export.setOutputFile(outputFile.getAbsolutePath());
-			export.execute(EnumSet.of(TargetType.SCRIPT), settings.getAction().toSchemaExportAction(), metadata.buildMetadata());
-		} else {
-			Class.forName("org.h2.Driver"); // walkaround for the "No suitable driver found" caused by driver being not registered in the DriverManager
-			Connection connection = DriverManager.getConnection(dbUrl, "SA", "");
-			engineDecorator.decorateDatabaseInitialization(connection);
-
-			if (settings.getAction() == Action.UPDATE) {
-				List<Path> resolvedMigrations = FileResolver.resolveExistingMigrations(settings.getOutputPath(), false, true);
-				for (Path resolvedMigration : resolvedMigrations) {
-					String statement = new String(Files.readAllBytes(resolvedMigration));
-					connection.prepareStatement(statement).execute();
-				}
-			}
-
-			metadata.buildMetadata().buildSessionFactory().close();
-
-			executePostProcessors(settings, connection);
-
-			connection.close();
+			handleMetadataGeneration(settings, outputFile);
+		} else if (settings.getGenerationMode() == GenerationMode.EMBEDDED_DATABASE) {
+			handleEmbeddedDatabaseGeneration(settings, outputFile);
+		} else if (settings.getGenerationMode() == GenerationMode.CONTAINER_DATABASE) {
+			handleContainerDatabaseGeneration(settings, outputFile);
 		}
 
 		if (outputFile.exists()) {
@@ -116,35 +69,50 @@ class SchemaGenerator {
 		}
 	}
 
-	private void executePostProcessors(GeneratorSettings settings, Connection connection) throws Exception {
-		ConfigurationBuilder configuration = ConfigurationBuilder.build(".*")
-				.setExpandSuperTypes(false)
-				.setScanners(new SubTypesScanner(true));
-		configuration.setUrls(getExistingUrls(configuration.getUrls()));
-		Reflections reflections = new Reflections(configuration);
+	private void handleContainerDatabaseGeneration(GeneratorSettings settings, File outputFile) throws Exception {
+		Class<? extends JdbcDatabaseContainer> jdbcContainerClass = resolveJdbcContainerClass();
 
-		Set<Class<? extends SchemaProcessor>> schemaProcessorClasses = reflections.getSubTypesOf(SchemaProcessor.class);
+		JdbcDatabaseContainer jdbcDatabaseContainer = jdbcContainerClass.getDeclaredConstructor().newInstance();
+		String driverClassName = jdbcDatabaseContainer.getDriverClassName();
 
-		for (Class<? extends SchemaProcessor> schemaProcessorClass : schemaProcessorClasses) {
-			SchemaProcessor schemaProcessor = schemaProcessorClass.getDeclaredConstructor().newInstance();
-			schemaProcessor.postProcess(connection, settings.getProcessorProperties());
+		try {
+			jdbcDatabaseContainer.start();
+
+			databaseSchemaProcessor.processDatabase(settings, outputFile, jdbcDatabaseContainer.getJdbcUrl(), driverClassName, jdbcDatabaseContainer.getUsername(), jdbcDatabaseContainer.getPassword(), null);
+		} finally {
+			if (jdbcDatabaseContainer.isRunning()) {
+				jdbcDatabaseContainer.stop();
+			}
 		}
 	}
 
-	private Set<URL> getExistingUrls(Set<URL> urls) {
-		return urls.stream()
-				.filter(url -> {
-					try {
-						return new File(url.toURI()).exists();
-					} catch (URISyntaxException e) {
-						throw new RuntimeException(e);
-					}
-				})
-				.collect(Collectors.toSet());
+	private void handleEmbeddedDatabaseGeneration(GeneratorSettings settings, File outputFile) throws Exception {
+		EngineDecorator engineDecorator = EngineDecorator.getEngineDecorator(settings.getJpaProperties().getProperty(HIBERNATE_DIALECT));
+
+		String dbUrl = engineDecorator.decorateConnectionString(DB_URL);
+
+		databaseSchemaProcessor.processDatabase(settings, outputFile, dbUrl, "org.h2.Driver", "sa", "", engineDecorator::decorateDatabaseInitialization);
 	}
 
-	private String getDbUrl(EngineDecorator engineDecorator) {
-		return engineDecorator.decorateConnectionString(DB_URL);
+	private void handleMetadataGeneration(GeneratorSettings settings, File outputFile) throws Exception {
+		MetadataSources metadata = databaseSchemaProcessor.prepareMetadataSources(settings, outputFile, null, null, null);
+
+		SchemaExport export = new SchemaExport();
+		export.setFormat(settings.isFormatOutput());
+		export.setDelimiter(settings.getDelimiter());
+		export.setOutputFile(outputFile.getAbsolutePath());
+		export.execute(EnumSet.of(TargetType.SCRIPT), settings.getAction().toSchemaExportAction(), metadata.buildMetadata());
+	}
+
+	private Class<? extends JdbcDatabaseContainer> resolveJdbcContainerClass() {
+		Set<Class<? extends JdbcDatabaseContainer>> subTypesOf = classResolver.getSubTypesOf(JdbcDatabaseContainer.class);
+		if (subTypesOf.size() > 1) {
+			throw new IllegalStateException("More than one JdbcDatabaseContainer found");
+		} else if (subTypesOf.isEmpty()) {
+			throw new IllegalStateException("No JdbcDatabaseContainer found - please add dependency to proper test-containers module");
+		}
+
+		return subTypesOf.iterator().next();
 	}
 
 	private void validateSettings(GeneratorSettings settings) {
@@ -152,7 +120,7 @@ class SchemaGenerator {
 			if (settings.getOutputPath().exists() && !settings.getOutputPath().isDirectory()) {
 				throw new IllegalArgumentException("For UPDATE action outputPath must be a directory");
 			}
-			if (settings.getGenerationMode() != GenerationMode.DATABASE) {
+			if (settings.getGenerationMode() != GenerationMode.EMBEDDED_DATABASE && settings.getGenerationMode() != GenerationMode.CONTAINER_DATABASE) {
 				throw new IllegalArgumentException("For UPDATE action generation mode must be set to DATABASE");
 			}
 		}

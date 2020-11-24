@@ -24,7 +24,7 @@ public class DatabaseSchemaGeneratorTest {
 		File outputDir = tempFolder.newFolder();
 
 		// when
-		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.EMBEDDED_DATABASE, outputFile,
 				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP_AND_CREATE, new Properties(), true, ";", false, null));
 
 		// then
@@ -40,7 +40,7 @@ public class DatabaseSchemaGeneratorTest {
 		File outputFile = tempFolder.newFile();
 
 		// when
-		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.EMBEDDED_DATABASE, outputFile,
 				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.DROP, new Properties(), true, ";", false, null));
 
 		// then
@@ -57,7 +57,7 @@ public class DatabaseSchemaGeneratorTest {
 		File outputDir = tempFolder.newFolder();
 
 		// when
-		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputFile,
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.EMBEDDED_DATABASE, outputFile,
 				Arrays.asList("com.devskiller.jpa2ddl.sample"), Action.CREATE, new Properties(), true, ";", false, null));
 
 		// then

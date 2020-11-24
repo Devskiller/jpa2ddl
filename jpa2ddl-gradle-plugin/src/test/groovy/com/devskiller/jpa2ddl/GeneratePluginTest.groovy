@@ -35,7 +35,7 @@ class GeneratePluginTest {
 		GeneratorSettings settings = task.getSettings()
 		assertThat(settings.getAction()).isEqualTo(Action.CREATE)
 		assertThat(settings.getDelimiter()).isEqualTo(";")
-		assertThat(settings.getGenerationMode()).isEqualTo(GenerationMode.DATABASE)
+		assertThat(settings.getGenerationMode()).isEqualTo(GenerationMode.EMBEDDED_DATABASE)
 		assertThat(settings.getJpaProperties()).contains(new MapEntry("hibernate.dialect", "org.hibernate.dialect.H2Dialect"))
 		assertThat(settings.getPackages()).containsOnly("com.test")
 //		assertThat(settings.getOutputPath()).isEqualTo(testProjectDir.getRoot().toPath().resolve("build/generated-resources/main/scripts/database.sql").toFile())

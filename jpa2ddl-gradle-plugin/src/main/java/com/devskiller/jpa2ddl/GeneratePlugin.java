@@ -52,7 +52,7 @@ class GeneratePlugin implements Plugin<Project> {
 			generatePluginExtension.setAction(Action.CREATE);
 		}
 		if (!generatePluginExtension.getGenerationModeProvider().isPresent()) {
-			generatePluginExtension.setGenerationMode(GenerationMode.DATABASE);
+			generatePluginExtension.setGenerationMode(GenerationMode.EMBEDDED_DATABASE);
 		}
 		if (!generatePluginExtension.getDelimiterProvider().isPresent()) {
 			generatePluginExtension.setDelimiter(";");
