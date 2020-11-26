@@ -38,7 +38,7 @@ public class DatabaseComplexSchemaUpdateTest {
 		SchemaGenerator schemaGenerator = new SchemaGenerator();
 
 		// when
-		schemaGenerator.generate(new GeneratorSettings(GenerationMode.DATABASE, outputPath,
+		schemaGenerator.generate(new GeneratorSettings(GenerationMode.EMBEDDED_DATABASE, outputPath,
 				Arrays.asList("com.devskiller.jpa2ddl.complex"), Action.UPDATE, jpaProperties, true, ";", false, null));
 
 		// then

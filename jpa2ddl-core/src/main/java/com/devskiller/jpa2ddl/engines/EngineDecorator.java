@@ -30,7 +30,7 @@ public abstract class EngineDecorator {
 		return connectionString;
 	}
 
-	public void decorateDatabaseInitialization(Connection connection) throws IOException, SQLException {
+	public void decorateDatabaseInitialization(Connection connection) {
 	}
 
 }

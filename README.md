@@ -21,8 +21,9 @@ Why another tool to dump the JPA schema? All tools that we've found were related
   - `CREATE`
   - `DROP_AND_CREATE`
   - `UPDATE`
-- `generationMode`: schema generation mode. By default `DATABASE`. Possible values:
-  - `DATABASE`: generation based on setting up embedded database and dumping the schema
+- `generationMode`: schema generation mode. By default `EMBEDDED_DATABASE`. Possible values:
+  - `EMBEDDED_DATABASE`: generation based on setting up embedded database and dumping the schema
+  - `CONTAINER_DATABASE`: generation based on setting up container database and dumping the schema
   - `METADATA`: generation based on static metadata
 - `processorProperties`: properties passed to external `SchemaProcessor` classes
 

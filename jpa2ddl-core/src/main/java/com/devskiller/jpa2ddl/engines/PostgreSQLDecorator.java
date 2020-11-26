@@ -14,8 +14,12 @@ class PostgreSQLDecorator extends EngineDecorator {
 	}
 
 	@Override
-	public void decorateDatabaseInitialization(Connection connection) throws IOException, SQLException {
-		String dbInit = new String(Utils.getResource("/org/h2/server/pg/pg_catalog.sql"));
-		connection.prepareStatement(dbInit).execute();
+	public void decorateDatabaseInitialization(Connection connection) {
+		try {
+			String dbInit = new String(Utils.getResource("/org/h2/server/pg/pg_catalog.sql"));
+			connection.prepareStatement(dbInit).execute();
+		} catch (SQLException | IOException e) {
+			throw new IllegalStateException("Cannot process database initialization", e);
+		}
 	}
 }
