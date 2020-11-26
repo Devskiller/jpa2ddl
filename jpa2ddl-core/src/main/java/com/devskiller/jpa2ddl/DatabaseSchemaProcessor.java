@@ -26,21 +26,15 @@ class DatabaseSchemaProcessor {
 	void processDatabase(GeneratorSettings settings, File outputFile, String jdbcUrl, String driverClassName, String username, String password, Consumer<Connection> connectionPostProcessor) throws Exception {
 		Class.forName(driverClassName); // force driver class load
 
-		Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
-
-		if (connectionPostProcessor != null) {
-			connectionPostProcessor.accept(connection);
+		try(Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+			if (connectionPostProcessor != null) {
+				connectionPostProcessor.accept(connection);
+			}
+			applyExistingMigrations(settings, connection);
+			MetadataSources metadata = prepareMetadataSources(settings, outputFile, jdbcUrl, username, password);
+			metadata.buildMetadata().buildSessionFactory().close();
+			executePostProcessors(settings, connection);
 		}
-
-		applyExistingMigrations(settings, connection);
-
-		MetadataSources metadata = prepareMetadataSources(settings, outputFile, jdbcUrl, username, password);
-
-		metadata.buildMetadata().buildSessionFactory().close();
-
-		executePostProcessors(settings, connection);
-
-		connection.close();
 	}
 
 
